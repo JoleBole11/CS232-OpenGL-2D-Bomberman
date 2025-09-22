@@ -3,6 +3,7 @@
 #include <vector>
 #include <time.h>
 #include "GameObject.h"
+#include "Player.h"
 
 class Game
 {
@@ -12,14 +13,15 @@ private:
     const int height;
 
     // Map textures
-    int texture_cols = 4;
-    int texture_size = 64;
+    int texture_cols = 15;
+    int texture_size = 13;
 
     // Height change per tile
     int height_change = 16;
 
     // Map size
-    const int map_size = 15;
+    const int map_size_x = 15;
+    const int map_size_y = 13;
 
     // Screen position
     glm::vec2 screen = glm::vec2(
@@ -33,10 +35,11 @@ private:
 
     // Maps
     std::vector<std::vector<int>> tile_map;
-    std::vector<std::vector<int>> height_map;
+    int* height_map;
     std::vector<std::vector<int>> object_map;
 
     //objects
+    std::vector<GameObject*> players;
     std::vector<GameObject*> mapV;
     std::vector<GameObject*> tiles;
     std::vector<GameObject*> objects;

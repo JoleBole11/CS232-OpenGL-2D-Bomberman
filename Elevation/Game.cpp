@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Input.h"
 
 Game* Game::game_instance = nullptr;
 
@@ -34,6 +35,20 @@ bool Game::load_textures()
 	for (auto& t : tiles) delete t;
 	tiles.clear();
 
+	Player* player1 = new Player(
+		glm::vec2(64, 64),
+		glm::vec2(0),
+		new Sprite(
+			"resources/characters.png",
+			glm::vec2(64, 64),
+			1,
+			glm::vec2(20)
+		),
+		height_map
+	);
+	player1->get_sprite()->set_current_frame(0);
+	players.push_back(player1);
+
 	GameObject* map = new GameObject(
 		glm::vec2(0, 0),
 		glm::vec2(0),
@@ -49,17 +64,16 @@ bool Game::load_textures()
 
 	for (int row = 0; row < tile_map.size(); ++row) {
 		for (int col = 0; col < tile_map[row].size(); ++col) {
-			float tile_width = 60.0f;
-			float tile_height = 46.0f;
+			float tile_size = 64.0f;
 
-			float origin_x = (width - tile_map[0].size() * tile_width) / 2.0f;
-			float origin_y = (height - tile_map.size() * tile_height) / 2.0f;
+			float origin_x = (width - tile_map[0].size() * tile_size) / 2.0f;
+			float origin_y = (height - tile_map.size() * tile_size) / 2.0f;
 
 			int flipped_row = tile_map.size() - 1 - row;
 
 			glm::vec2 pos(
-				col * tile_width + origin_x,
-				flipped_row * tile_height + origin_y
+				col * tile_size + origin_x,
+				flipped_row * tile_size + origin_y
 			);
 
 			int wall_type = tile_map[row][col];
@@ -72,9 +86,9 @@ bool Game::load_textures()
 					glm::vec2(0),
 					new Sprite(
 						"resources/walls.png",
-						glm::vec2(tile_width, tile_height),
+						glm::vec2(tile_size),
 						1,
-						glm::vec2(2)
+						glm::vec2(2, 1)
 					)
 				);
 				tile->get_sprite()->set_current_frame(frame);
@@ -88,7 +102,7 @@ bool Game::load_textures()
 					glm::vec2(0),
 					new Sprite(
 						"resources/bombs2.png",
-						glm::vec2(tile_width, tile_height),
+						glm::vec2(tile_size),
 						1,
 						glm::vec2(8)
 					)
@@ -118,49 +132,60 @@ void Game::render()
 		o->render();
 	}
 
+	for (auto& p : players) {
+		p->render();
+	}
+
 	glutSwapBuffers();
 }
 
-void Game::update(float delta_time) {}
+void Game::update(float delta_time) 
+{
+	for (auto& p : players) {
+		p->update(delta_time);
+	}
+}
 
 void Game::init_game()
 {
+	Input::setCallbackFunctions();
+
 	srand(static_cast<unsigned int>(time(nullptr)));
 	tile_map = {
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,1,2,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	};
 
-	height_map = {
-		{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-		{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-		{2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2},
-		{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-		{2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2},
-		{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-		{2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2},
-		{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-		{2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2},
-		{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-		{2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2},
-		{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-		{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+	height_map = new int[195]{
+		2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+		2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
 	};
 
 	object_map = {
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
