@@ -2,6 +2,7 @@
 #include "Input.h"
 
 Game* Game::game_instance = nullptr;
+const float tile_size = 64.0f;
 
 Game::Game(int argc, char** argv,
 	const char* title,
@@ -39,10 +40,10 @@ bool Game::load_textures()
 		glm::vec2(64, 64),
 		glm::vec2(0),
 		new Sprite(
-			"resources/characters.png",
-			glm::vec2(64, 64),
+			"resources/charWhite.png",
+			glm::vec2(tile_size),
 			1,
-			glm::vec2(20)
+			glm::vec2(4, 3)
 		),
 		height_map
 	);
@@ -64,7 +65,7 @@ bool Game::load_textures()
 
 	for (int row = 0; row < tile_map.size(); ++row) {
 		for (int col = 0; col < tile_map[row].size(); ++col) {
-			float tile_size = 64.0f;
+			
 
 			float origin_x = (width - tile_map[0].size() * tile_size) / 2.0f;
 			float origin_y = (height - tile_map.size() * tile_size) / 2.0f;
