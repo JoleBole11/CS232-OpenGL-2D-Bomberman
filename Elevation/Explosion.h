@@ -1,5 +1,7 @@
 #pragma once
-#include "Bomb.h"
+#include "GameObject.h"
+#include "Game.h"
+
 class Explosion : GameObject
 {
 private:

@@ -10,7 +10,7 @@ private:
     float speed = 100;
     int* height_map;
     std::vector<std::vector<int>>* object_map;
-    float bomb_cooldown = 0.0f;  // Add cooldown to prevent spam
+    float bomb_cooldown = 0.0f;
 
     bool can_move_to_position(const glm::vec2& position);
 

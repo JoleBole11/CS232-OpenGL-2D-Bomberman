@@ -67,7 +67,6 @@ bool Game::load_textures()
 	map->get_sprite()->set_current_frame(0);
 	mapV.push_back(map);
 
-	// Render wall tiles
 	for (int row = 0; row < tile_map.size(); ++row) {
 		for (int col = 0; col < tile_map[row].size(); ++col) {
 			float origin_x = (width - tile_map[0].size() * tile_size) / 2.0f;
@@ -95,43 +94,6 @@ bool Game::load_textures()
 				);
 				tile->get_sprite()->set_current_frame(frame);
 				tiles.push_back(tile);
-			}
-		}
-	}
-
-	// Render bombs based on object_map
-	for (int row = 0; row < object_map.size(); ++row) {
-		for (int col = 0; col < object_map[row].size(); ++col) {
-			float origin_x = (width - object_map[0].size() * tile_size) / 2.0f;
-			float origin_y = (height - object_map.size() * tile_size) / 2.0f;
-			int flipped_row = object_map.size() - 1 - row;
-
-			glm::vec2 pos(
-				col * tile_size + origin_x,
-				flipped_row * tile_size + origin_y
-			);
-
-			int object_type = object_map[row][col];
-
-			// Bomb rendering: show bomb if object_type == 9
-			if (object_type == 1) {
-				Bomb* bombBlack = new Bomb(
-					pos,
-					glm::vec2(0),
-					new Sprite(
-						"resources/bombBlack.png",
-						glm::vec2(tile_size),
-						1,
-						glm::vec2(3, 1)
-					),
-					3,
-					&object_map,  // Pass object_map reference
-					height_map,   // Pass height_map reference
-					col,          // Pass tile coordinates
-					row
-				);
-				bombBlack->get_sprite()->set_current_frame(0);
-				objects.push_back(bombBlack);
 			}
 		}
 	}
@@ -264,39 +226,27 @@ void Game::cleanup()
 }
 
 void Game::addBomb(int tile_x, int tile_y) {
-	// Check bounds
 	if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
 		return;
 	}
 
-	// Convert world tile coordinates to array indices
-	// The player gives us world coordinates, but object_map uses array indices
-	int array_y = 12 - tile_y;  // Flip Y coordinate: bottom (12) becomes top (0)
+	int array_y = 12 - tile_y;
 
-	// Check if position is already occupied using array coordinates
 	if (object_map[array_y][tile_x] != 0) {
 		return;
 	}
 
-	// Update object map using array coordinates
 	object_map[array_y][tile_x] = 1;
 
-	// Update height map for collision (height_map uses world coordinates)
-	int height_map_index = tile_x + tile_y * 15;  // Use world coordinates for height_map
-	height_map[height_map_index] = 2;
-
-	// Calculate world position for rendering
 	const float tile_size = 64.0f;
 	float origin_x = (width - 15 * tile_size) / 2.0f;
 	float origin_y = (height - 13 * tile_size) / 2.0f;
 
 	glm::vec2 bomb_pos(
 		tile_x * tile_size + origin_x,
-		tile_y * tile_size + origin_y  // Use world coordinates for positioning
+		tile_y * tile_size + origin_y
 	);
 
-	// Create and add bomb object
-	// Pass array coordinates to the bomb so it can clean up correctly
 	Bomb* new_bomb = new Bomb(
 		bomb_pos,
 		glm::vec2(0),
@@ -307,10 +257,9 @@ void Game::addBomb(int tile_x, int tile_y) {
 			glm::vec2(3, 1)
 		),
 		3.0f,
-		&object_map,    // Pass object_map reference
-		height_map,     // Pass height_map reference
-		tile_x,         // Pass world tile_x
-		array_y         // Pass array coordinate for y
+		&object_map,    
+		tile_x,         
+		array_y         
 	);
 	new_bomb->get_sprite()->set_current_frame(0);
 	objects.push_back(new_bomb);
@@ -325,6 +274,18 @@ void Game::init_glut()
 	glShadeModel(GL_SMOOTH);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glDisable(GL_DEPTH_TEST);
+}
+
+void Game::reshape(const GLsizei w, const GLsizei h)
+{
+	GLsizei width = w;
+	GLsizei height = (h == 0) ? 1 : h;
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, width, 0, height);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 void Game::game_loop()
