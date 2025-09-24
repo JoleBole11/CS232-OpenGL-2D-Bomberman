@@ -60,6 +60,10 @@ private:
 
 public:
     static Game* game_instance;
+
+    // Add public method to create bombs
+    void addBomb(int tile_x, int tile_y);
+
     Game(int argc, char** argv,
         const char* title,
         const int WIDTH, const int HEIGHT,

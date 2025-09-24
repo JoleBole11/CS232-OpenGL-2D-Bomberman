@@ -259,6 +259,53 @@ void Game::cleanup()
 	}
 }
 
+void Game::addBomb(int tile_x, int tile_y) {
+	// Check bounds
+	if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
+		return;
+	}
+
+	// Check if position is already occupied
+	if (object_map[tile_y][tile_x] != 0) {
+		return;
+	}
+
+	// Update object map
+	object_map[tile_y][tile_x] = 1;
+
+	// Update height map for collision
+	int height_map_index = tile_x + (13 - 1 - tile_y) * 15;
+	height_map[height_map_index] = 2;
+
+	// Calculate world position
+	const float tile_size = 64.0f;
+	float origin_x = (width - 15 * tile_size) / 2.0f;
+	float origin_y = (height - 13 * tile_size) / 2.0f;
+	int flipped_row = 13 - 1 - tile_y;
+
+	glm::vec2 bomb_pos(
+		tile_x * tile_size + origin_x,
+		flipped_row * tile_size + origin_y
+	);
+
+	// Create and add bomb object
+	Bomb* new_bomb = new Bomb(
+		bomb_pos,
+		glm::vec2(0),
+		new Sprite(
+			"resources/bombBlack.png",
+			glm::vec2(tile_size),
+			1,
+			glm::vec2(3, 1)
+		),
+		3.0f
+	);
+	new_bomb->get_sprite()->set_current_frame(0);
+	objects.push_back(new_bomb);
+
+	std::cout << "Bomb created at tile (" << tile_x << ", " << tile_y << ") world pos (" << bomb_pos.x << ", " << bomb_pos.y << ")" << std::endl;
+}
+
 void Game::reshape(const GLsizei w, const GLsizei h)
 {
 	GLsizei width = w;
