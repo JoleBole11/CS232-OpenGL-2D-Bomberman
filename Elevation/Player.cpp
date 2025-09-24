@@ -7,13 +7,12 @@ Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_m
 {
     height_map = _height_map;
     object_map = _object_map;
-    bomb_cooldown = 0.0f;  // Add this member variable
+    bomb_cooldown = 0.0f;
 }
 
 void Player::update(float dt)
 {
-    // Update bomb cooldown
-    if (bomb_cooldown > 0.0f) {
+    if (bomb_cooldown >= 0.0f) {
         bomb_cooldown -= dt;
     }
 
@@ -52,14 +51,13 @@ void Player::update(float dt)
         current_frame = 8;
     }
 
-    
     if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
         glm::vec2 center = get_position() + glm::vec2(32, 32);
         int tile_x = static_cast<int>(center.x / 64.0f);
         int tile_y = static_cast<int>(center.y / 64.0f);
 
         Game::game_instance->addBomb(tile_x, tile_y);
-        bomb_cooldown = 0.5f;
+        bomb_cooldown = 3.0f;
     }
 
     static float frame_timer = 0.0f;

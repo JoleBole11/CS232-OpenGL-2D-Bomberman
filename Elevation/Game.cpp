@@ -124,7 +124,11 @@ bool Game::load_textures()
 						1,
 						glm::vec2(3, 1)
 					),
-					3
+					3,
+					&object_map,  // Pass object_map reference
+					height_map,   // Pass height_map reference
+					col,          // Pass tile coordinates
+					row
 				);
 				bombBlack->get_sprite()->set_current_frame(0);
 				objects.push_back(bombBlack);
@@ -265,30 +269,34 @@ void Game::addBomb(int tile_x, int tile_y) {
 		return;
 	}
 
-	// Check if position is already occupied
-	if (object_map[tile_y][tile_x] != 0) {
+	// Convert world tile coordinates to array indices
+	// The player gives us world coordinates, but object_map uses array indices
+	int array_y = 12 - tile_y;  // Flip Y coordinate: bottom (12) becomes top (0)
+
+	// Check if position is already occupied using array coordinates
+	if (object_map[array_y][tile_x] != 0) {
 		return;
 	}
 
-	// Update object map
-	object_map[tile_y][tile_x] = 1;
+	// Update object map using array coordinates
+	object_map[array_y][tile_x] = 1;
 
-	// Update height map for collision
-	int height_map_index = tile_x + (13 - 1 - tile_y) * 15;
+	// Update height map for collision (height_map uses world coordinates)
+	int height_map_index = tile_x + tile_y * 15;  // Use world coordinates for height_map
 	height_map[height_map_index] = 2;
 
-	// Calculate world position
+	// Calculate world position for rendering
 	const float tile_size = 64.0f;
 	float origin_x = (width - 15 * tile_size) / 2.0f;
 	float origin_y = (height - 13 * tile_size) / 2.0f;
-	int flipped_row = 13 - 1 - tile_y;
 
 	glm::vec2 bomb_pos(
 		tile_x * tile_size + origin_x,
-		flipped_row * tile_size + origin_y
+		tile_y * tile_size + origin_y  // Use world coordinates for positioning
 	);
 
 	// Create and add bomb object
+	// Pass array coordinates to the bomb so it can clean up correctly
 	Bomb* new_bomb = new Bomb(
 		bomb_pos,
 		glm::vec2(0),
@@ -298,24 +306,16 @@ void Game::addBomb(int tile_x, int tile_y) {
 			1,
 			glm::vec2(3, 1)
 		),
-		3.0f
+		3.0f,
+		&object_map,    // Pass object_map reference
+		height_map,     // Pass height_map reference
+		tile_x,         // Pass world tile_x
+		array_y         // Pass array coordinate for y
 	);
 	new_bomb->get_sprite()->set_current_frame(0);
 	objects.push_back(new_bomb);
 
-	std::cout << "Bomb created at tile (" << tile_x << ", " << tile_y << ") world pos (" << bomb_pos.x << ", " << bomb_pos.y << ")" << std::endl;
-}
-
-void Game::reshape(const GLsizei w, const GLsizei h)
-{
-	GLsizei width = w;
-	GLsizei height = (h == 0) ? 1 : h;
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0, width, 0, height);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	std::cout << "Bomb created at world tile (" << tile_x << ", " << tile_y << ") array pos (" << tile_x << ", " << array_y << ")" << std::endl;
 }
 
 void Game::init_glut()

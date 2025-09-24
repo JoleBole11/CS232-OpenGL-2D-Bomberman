@@ -1,16 +1,13 @@
 #pragma once
 #include "Bomb.h"
-class Explosion :
-    public Bomb
+class Explosion : GameObject
 {
 private:
     float radius;
 	std::vector<std::vector<int>>* object_map;
 
 public:
-	Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, float rad, std::vector<std::vector<int>>* object_map);
-
-	void TriggerExplosion();
+	Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float rad, std::vector<std::vector<int>>* _object_map);
 
 	void update(float dt);
 };

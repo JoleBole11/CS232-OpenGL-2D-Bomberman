@@ -1,15 +1,10 @@
 #include "Explosion.h"
 #include "Game.h"
 
-Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, float rad, std::vector<std::vector<int>>* _object_map)
-	: Bomb(pos, vel, spr, time)
+Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float rad, std::vector<std::vector<int>>* _object_map)
 {
 	radius = rad;
 	object_map = _object_map;
-}
-
-void Explosion::TriggerExplosion()
-{
 }
 
 void Explosion::update(float dt)
@@ -22,13 +17,13 @@ void Explosion::update(float dt)
 	int center_y = static_cast<int>(get_position().y / tile_size);
 
  	// Frame indices for explosion parts (adjust to your sprite sheet)
-	const int frame_center      = 6;
-	const int frame_top_end     = 0;
-	const int frame_bottom_end  = 1;
-	const int frame_left_end    = 2;
-	const int frame_right_end   = 3;
-	const int frame_vertical    = 4;
-	const int frame_horizontal  = 5;
+	const int frame_center = 6;
+	const int frame_top = 0;
+	const int frame_bottom = 1;
+	const int frame_left = 2;
+	const int frame_right = 3;
+	const int frame_vertical = 4;
+	const int frame_horizontal = 5;
 
 	// Center
 	if (center_x >= 0 && center_x < cols && center_y >= 0 && center_y < rows) {
@@ -42,7 +37,7 @@ void Explosion::update(float dt)
 
 		// Top edge
 		if (i == static_cast<int>(radius) && y_top >= 0 && center_x >= 0 && center_x < cols) {
-			(*object_map)[y_top][center_x] = frame_top_end;
+			(*object_map)[y_top][center_x] = frame_top;
 		}
 		// Top between
 		else if (y_top >= 0 && center_x >= 0 && center_x < cols) {
@@ -51,7 +46,7 @@ void Explosion::update(float dt)
 
 		// Bottom edge
 		if (i == static_cast<int>(radius) && y_bottom < rows && center_x >= 0 && center_x < cols) {
-			(*object_map)[y_bottom][center_x] = frame_bottom_end;
+			(*object_map)[y_bottom][center_x] = frame_bottom;
 		}
 		// Bottom between
 		else if (y_bottom < rows && center_x >= 0 && center_x < cols) {
@@ -66,7 +61,7 @@ void Explosion::update(float dt)
 
 		// Left edge
 		if (i == static_cast<int>(radius) && x_left >= 0 && center_y >= 0 && center_y < rows) {
-			(*object_map)[center_y][x_left] = frame_left_end;
+			(*object_map)[center_y][x_left] = frame_left;
 		}
 		// Left between
 		else if (x_left >= 0 && center_y >= 0 && center_y < rows) {
@@ -75,7 +70,7 @@ void Explosion::update(float dt)
 
 		// Right edge
 		if (i == static_cast<int>(radius) && x_right < cols && center_y >= 0 && center_y < rows) {
-			(*object_map)[center_y][x_right] = frame_right_end;
+			(*object_map)[center_y][x_right] = frame_right;
 		}
 		// Right between
 		else if (x_right < cols && center_y >= 0 && center_y < rows) {
