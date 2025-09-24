@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Input.h"
+#include "Bomb.h"
 
 Game* Game::game_instance = nullptr;
 const float tile_size = 64.0f;
@@ -35,6 +36,8 @@ bool Game::load_textures()
 	mapV.clear();
 	for (auto& t : tiles) delete t;
 	tiles.clear();
+	for (auto& o : objects) delete o;
+	objects.clear();
 
 	Player* player1 = new Player(
 		glm::vec2(64, 64),
@@ -45,7 +48,8 @@ bool Game::load_textures()
 			1,
 			glm::vec2(4, 3)
 		),
-		height_map
+		height_map,
+		&object_map
 	);
 	player1->get_sprite()->set_current_frame(0);
 	players.push_back(player1);
@@ -63,13 +67,11 @@ bool Game::load_textures()
 	map->get_sprite()->set_current_frame(0);
 	mapV.push_back(map);
 
+	// Render wall tiles
 	for (int row = 0; row < tile_map.size(); ++row) {
 		for (int col = 0; col < tile_map[row].size(); ++col) {
-			
-
 			float origin_x = (width - tile_map[0].size() * tile_size) / 2.0f;
 			float origin_y = (height - tile_map.size() * tile_size) / 2.0f;
-
 			int flipped_row = tile_map.size() - 1 - row;
 
 			glm::vec2 pos(
@@ -78,7 +80,6 @@ bool Game::load_textures()
 			);
 
 			int wall_type = tile_map[row][col];
-			int object_type = object_map[row][col];
 
 			if (wall_type != 0) {
 				int frame = (wall_type == 1) ? 1 : 0;
@@ -95,21 +96,38 @@ bool Game::load_textures()
 				tile->get_sprite()->set_current_frame(frame);
 				tiles.push_back(tile);
 			}
+		}
+	}
 
-			if (object_type != 0) {
-				int frame = (object_type == 1) ? 1 : 0;
-				GameObject* object = new GameObject(
+	// Render bombs based on object_map
+	for (int row = 0; row < object_map.size(); ++row) {
+		for (int col = 0; col < object_map[row].size(); ++col) {
+			float origin_x = (width - object_map[0].size() * tile_size) / 2.0f;
+			float origin_y = (height - object_map.size() * tile_size) / 2.0f;
+			int flipped_row = object_map.size() - 1 - row;
+
+			glm::vec2 pos(
+				col * tile_size + origin_x,
+				flipped_row * tile_size + origin_y
+			);
+
+			int object_type = object_map[row][col];
+
+			// Bomb rendering: show bomb if object_type == 9
+			if (object_type == 1) {
+				Bomb* bombBlack = new Bomb(
 					pos,
 					glm::vec2(0),
 					new Sprite(
-						"resources/bombs2.png",
+						"resources/bombBlack.png",
 						glm::vec2(tile_size),
 						1,
-						glm::vec2(8)
-					)
+						glm::vec2(3, 1)
+					),
+					3
 				);
-				object->get_sprite()->set_current_frame(frame);
-				objects.push_back(object);
+				bombBlack->get_sprite()->set_current_frame(0);
+				objects.push_back(bombBlack);
 			}
 		}
 	}
@@ -145,62 +163,86 @@ void Game::update(float delta_time)
 	for (auto& p : players) {
 		p->update(delta_time);
 	}
+	for (auto& o : objects) {
+		o->update(delta_time);
+	}
 }
 
 void Game::init_game()
 {
-	Input::setCallbackFunctions();
+    Input::setCallbackFunctions();
 
-	srand(static_cast<unsigned int>(time(nullptr)));
-	tile_map = {
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	};
+    srand(static_cast<unsigned int>(time(nullptr)));
+    tile_map = {
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    };
 
-	height_map = new int[195]{
-		2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-		2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-		2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-	};
+    height_map = new int[195]{
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+    };
 
-	object_map = {
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	};
+    object_map = {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    };
 
-	load_textures();
+	int rows = int(tile_map.size());
+	int cols = int(tile_map[0].size());
+	for (int row = 0; row < rows; ++row) {
+		for (int col = 0; col < cols; ++col) {
+			int flipped_row = rows - 1 - row;
+			if (tile_map[row][col] > 0) {
+				int index = flipped_row * cols + col;
+				height_map[index] = 2;
+			}
+		}
+	}
+	for (int row = 0; row < rows; ++row) {
+		for (int col = 0; col < cols; ++col) {
+			int flipped_row = rows - 1 - row;
+			if (object_map[row][col] > 0) {
+				int index = flipped_row * cols + col;
+				height_map[index] = 2;
+			}
+		}
+	}
+
+    load_textures();
 }
 
 void Game::cleanup()

@@ -1,9 +1,12 @@
 #include "Player.h"
+#include "Game.h"      
+#include "Bomb.h"      
 
-Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map) :
+Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* _object_map) :
 	GameObject(pos, velocity, sprite)
 {
 	height_map = _height_map;
+	object_map = _object_map;
 }
 
 void Player::update(float dt)
@@ -42,13 +45,22 @@ void Player::update(float dt)
         sprite->set_sprite_flip(flip);
 		current_frame = 8;
 	}
+	if (Input::getKey('V')) {
+		glm::vec2 center = get_position() + glm::vec2(32, 32);
+		int tile_x = static_cast<int>(center.x / 64.0f);
+		int tile_y = static_cast<int>(center.y / 64.0f);
+		if (tile_x >= 0 && tile_x < 15 && tile_y >= 0 && tile_y < 13) {
+			(*object_map)[tile_y][tile_x] = 1;
+		}
+		std::cout << "Bomb placed at tile: (" << tile_x << ", " << tile_y << ")\n";
+	}
 
 	static float frame_timer = 0.0f;
 	static int anim_frame = 0;
 	const int frame_count = 4;
 	if (moving) {
 		frame_timer += dt;
-		if (frame_timer >= 0.2f) { // Speed
+		if (frame_timer >= 0.2f) {
 			anim_frame = (anim_frame + 1) % frame_count;
 			sprite->set_current_frame(current_frame + anim_frame);
 			frame_timer = 0.0f;
@@ -78,7 +90,7 @@ void Player::update(float dt)
 	glm::vec2 center = get_position() + glm::vec2(32, 32);
 	int center_tile_x = static_cast<int>(center.x / 64.0f);
 	int center_tile_y = static_cast<int>(center.y / 64.0f);
-	std::cout << "Center Position: (" << center_tile_x << ", " << center_tile_y << ")\n";
+	//std::cout << "Center Position: (" << center_tile_x << ", " << center_tile_y << ")\n";
 }
 
 bool Player::can_move_to_position(const glm::vec2& position)
