@@ -279,7 +279,7 @@ void Game::addBomb(int tile_x, int tile_y) {
 		tile_x,         
 		tile_y_reversed
 	);
-	new_bomb->get_sprite()->set_current_frame(0);
+	new_bomb->get_sprite()->set_current_frame(2);
 	objects.push_back(new_bomb);
 
 	std::cout << "Bomb created at world tile (" << tile_x << ", " << tile_y << ") array pos (" << tile_x << ", " << tile_y_reversed << ")" << std::endl;

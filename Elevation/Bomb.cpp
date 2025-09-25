@@ -21,7 +21,7 @@ void Bomb::update(float dt)
 
     if (timer <= initial_timer / 3.0f)
     {
-        sprite->set_current_frame(2);
+        sprite->set_current_frame(0);
     }
     else if (timer <= initial_timer * 2.0f / 3.0f)
     {
@@ -29,7 +29,7 @@ void Bomb::update(float dt)
     }
     else if (timer > 0.0f)
     {
-        sprite->set_current_frame(0);
+        sprite->set_current_frame(2);
     }
 
     if (timer <= 0.0f)
