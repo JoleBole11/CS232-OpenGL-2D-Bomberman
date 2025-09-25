@@ -131,8 +131,7 @@ void Explosion::update(float dt)
     if (timer <= 0.0f) {
         // Clear all explosion positions from object_map
         for (const auto& pos : explosion_positions) {
-            int pos_y_flipped = 12 - pos.tile_y;  // Use same flip as other functions
-            (*object_map)[pos_y_flipped][pos.tile_x] = 0;
+            (*object_map)[pos.tile_y][pos.tile_x] = 0;
         }
         explosion_positions.clear();
 
