@@ -34,6 +34,7 @@ void Bomb::update(float dt)
             tile_x >= 0 && tile_x < (*object_map)[tile_y].size()) {
             (*object_map)[tile_y][tile_x] = 0;
         }
+        Game::game_instance->addExplosion(tile_x, tile_y);
 
         set_is_active(false);
         set_is_visible(false);

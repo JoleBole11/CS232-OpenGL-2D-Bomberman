@@ -1,10 +1,11 @@
 #include "Explosion.h"
 #include "Game.h"
 
-Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float rad, std::vector<std::vector<int>>* _object_map)
+Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float rad, std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map)
 {
 	radius = rad;
 	object_map = _object_map;
+	tile_map = _tile_map;
 }
 
 void Explosion::update(float dt)
