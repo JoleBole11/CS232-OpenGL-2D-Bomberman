@@ -320,7 +320,8 @@ void Game::addExplosion(int tile_x, int tile_y)
 		&object_map,
 		&tile_map,
 		tile_x,
-		tile_y_reversed
+		tile_y_reversed,
+		height_map
 	);
 	new_explosion->get_sprite()->set_current_frame(6);
 	objects.push_back(new_explosion);

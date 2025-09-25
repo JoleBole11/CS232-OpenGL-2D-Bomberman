@@ -2,7 +2,7 @@
 
 
 Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, int rad,
-    std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map, int tx, int ty)
+    std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map, int tx, int ty, int* _height_map)
     : GameObject(pos, vel, spr)
 {
     radius = rad;
@@ -13,6 +13,7 @@ Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, in
     explosion_applied = false;
     tile_x = tx;
     tile_y = ty;
+	height_map = _height_map;
 }
 
 Explosion::~Explosion()
@@ -60,7 +61,7 @@ void Explosion::update(float dt)
         std::cout << "Set center at array[" << center_y << "][" << center_x << "] = " << frame_center << std::endl;
 
         // Vertical explosion
-        for (int i = 1; i <= radius; ++i) {
+        for (int i = 1; i <= static_cast<int>(radius); ++i) {
             // Up direction (positive Y)
             int y_up = center_y + i;
             if (y_up < rows) {
@@ -76,7 +77,7 @@ void Explosion::update(float dt)
             // Down direction (negative Y)
             int y_down = center_y - i;
             if (y_down >= 0) {
-                if (i == radius) {
+                if (i == static_cast<int>(radius)) {
                     (*object_map)[y_down][center_x] = frame_bottom;
                 }
                 else {
@@ -87,11 +88,11 @@ void Explosion::update(float dt)
         }
 
         // Horizontal explosion
-        for (int i = 1; i <= radius; ++i) {
+        for (int i = 1; i <= static_cast<int>(radius); ++i) {
             // Left direction
             int x_left = center_x - i;
             if (x_left >= 0) {
-                if (i == radius) {
+                if (i == static_cast<int>(radius)) {
                     (*object_map)[center_y][x_left] = frame_left;
                 }
                 else {
@@ -103,7 +104,7 @@ void Explosion::update(float dt)
             // Right direction
             int x_right = center_x + i;
             if (x_right < cols) {
-                if (i == radius) {
+                if (i == static_cast<int>(radius)) {
                     (*object_map)[center_y][x_right] = frame_right;
                 }
                 else {
@@ -133,7 +134,7 @@ void Explosion::update(float dt)
             (*object_map)[center_y][center_x] = 0;
 
             // Clear vertical
-            for (int i = 1; i <= radius; ++i) {
+            for (int i = 1; i <= static_cast<int>(radius); ++i) {
                 if (center_y + i < rows) {
                     (*object_map)[center_y + i][center_x] = 0;
                 }
@@ -143,7 +144,7 @@ void Explosion::update(float dt)
             }
 
             // Clear horizontal
-            for (int i = 1; i <= radius; ++i) {
+            for (int i = 1; i <= static_cast<int>(radius); ++i) {
                 if (center_x - i >= 0) {
                     (*object_map)[center_y][center_x - i] = 0;
                 }
