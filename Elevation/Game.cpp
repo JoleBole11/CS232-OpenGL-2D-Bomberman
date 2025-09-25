@@ -132,18 +132,30 @@ void Game::update(float delta_time)
 	for (auto& p : players) {
 		p->update(delta_time);
 	}
+
+	auto pl = players.begin();
+	while (pl != players.end()) {
+		if (!(*pl)->get_is_active()) {
+			delete* pl;
+			pl = players.erase(pl);
+		}
+		else {
+			++pl;
+		}
+	}
+
 	for (auto& o : objects) {
 		o->update(delta_time);
 	}
 
-	auto it = objects.begin();
-	while (it != objects.end()) {
-		if (!(*it)->get_is_active()) {
-			delete* it;
-			it = objects.erase(it);
+	auto ob = objects.begin();
+	while (ob != objects.end()) {
+		if (!(*ob)->get_is_active()) {
+			delete* ob;
+			ob = objects.erase(ob);
 		}
 		else {
-			++it;
+			++ob;
 		}
 	}
 }

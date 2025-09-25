@@ -16,6 +16,15 @@ Player::~Player()
 
 void Player::update(float dt)
 {
+    if (dead) {
+        set_is_active(false);
+        set_is_visible(false);
+	}
+    
+    glm::vec2 center = get_position() + glm::vec2(32, 32);
+    int tile_x = static_cast<int>(center.x / 64.0f);
+    int tile_y = static_cast<int>(center.y / 64.0f);
+
     if (bomb_cooldown >= 0.0f) {
         bomb_cooldown -= dt;
     }
@@ -56,12 +65,13 @@ void Player::update(float dt)
     }
 
     if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
-        glm::vec2 center = get_position() + glm::vec2(32, 32);
-        int tile_x = static_cast<int>(center.x / 64.0f);
-        int tile_y = static_cast<int>(center.y / 64.0f);
-
         Game::game_instance->addBomb(tile_x, tile_y);
         bomb_cooldown = 3.0f;
+    }
+
+    if ((*object_map)[tile_y][tile_x] == 2)
+    {
+		dead = true;
     }
 
     static float frame_timer = 0.0f;
