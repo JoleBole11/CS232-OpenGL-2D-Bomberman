@@ -38,56 +38,89 @@ void Explosion::update(float dt)
         int center_x = static_cast<int>((get_position().x - origin_x) / tile_size);
         int center_y = static_cast<int>((get_position().y - origin_y) / tile_size);
 
+        // Flip Y coordinate to match the coordinate system used elsewhere
+        int center_y_flipped = 12 - center_y;
+
         std::cout << "Explosion at world pos (" << get_position().x << ", " << get_position().y << ")" << std::endl;
-        std::cout << "Calculated tile pos (" << center_x << ", " << center_y << ")" << std::endl;
+        std::cout << "Calculated tile pos (" << center_x << ", " << center_y << ") flipped Y: " << center_y_flipped << std::endl;
 
         // Bounds check for center position
-        if (center_x < 0 || center_x >= cols || center_y < 0 || center_y >= rows) {
+        if (center_x < 0 || center_x >= cols || center_y_flipped < 0 || center_y_flipped >= rows) {
             std::cout << "Explosion position out of bounds!" << std::endl;
             set_is_active(false);
             set_is_visible(false);
             return;
         }
 
-        // Set center explosion
-        (*object_map)[center_y][center_x] = 2;  // Use 2 for explosion
-        explosion_positions.push_back({ center_x, center_y, 6 });  // frame 6 for center
+        // Set center explosion using flipped coordinates
+        (*object_map)[center_y_flipped][center_x] = 2;  // Use 2 for explosion
+        explosion_positions.push_back({ center_x, center_y_flipped, 0 });  // frame 6 for center
 
-        // Vertical explosion
+        // Vertical explosion (Up direction in world space = positive Y)
         for (int i = 1; i <= static_cast<int>(radius); ++i) {
-            // Up direction
-            int y_up = center_y + i;
-            if (y_up < rows) {
-                (*object_map)[y_up][center_x] = 2;  // Use 2 for explosion
-                int frame = (i == static_cast<int>(radius)) ? 0 : 4;  // top or vertical
-                explosion_positions.push_back({ center_x, y_up, frame });
-            }
+            // Up direction (positive Y in world coordinates)
+            int world_y_up = center_y + i;
+            int world_y_up_flipped = 12 - world_y_up;  // Flip for array access
 
-            // Down direction
-            int y_down = center_y - i;
-            if (y_down >= 0) {
-                (*object_map)[y_down][center_x] = 2;  // Use 2 for explosion
-                int frame = (i == static_cast<int>(radius)) ? 1 : 4;  // bottom or vertical
-                explosion_positions.push_back({ center_x, y_down, frame });
+            if (world_y_up < rows && world_y_up_flipped >= 0) {
+                // Check for wall collision using height_map
+                int height_map_index = center_x + world_y_up * cols;
+                if (height_map[height_map_index] >= 2) {
+                    break;  // Hit a wall, stop explosion in this direction
+                }
+
+                (*object_map)[world_y_up_flipped][center_x] = 2;
+                int frame = (i == static_cast<int>(radius)) ? 5 : 2;
+                explosion_positions.push_back({ center_x, world_y_up_flipped, frame });
             }
         }
 
-        // Horizontal explosion
+        // Vertical explosion up
         for (int i = 1; i <= static_cast<int>(radius); ++i) {
-            // Left direction
+            int world_y_down = center_y - i;
+            int world_y_down_flipped = 12 - world_y_down;
+
+            if (world_y_down >= 0 && world_y_down_flipped < rows) {
+                int height_map_index = center_x + world_y_down * cols;
+                if (height_map[height_map_index] >= 2) {
+                    break;
+                }
+
+                (*object_map)[world_y_down_flipped][center_x] = 2;
+                int frame = (i == static_cast<int>(radius)) ? 6 : 2;
+                explosion_positions.push_back({ center_x, world_y_down_flipped, frame });
+            }
+        }
+
+        // Horizontal explosion (Left direction)
+        for (int i = 1; i <= static_cast<int>(radius); ++i) {
             int x_left = center_x - i;
             if (x_left >= 0) {
-                (*object_map)[center_y][x_left] = 2;  // Use 2 for explosion
-                int frame = (i == static_cast<int>(radius)) ? 2 : 5;  // left or horizontal
-                explosion_positions.push_back({ x_left, center_y, frame });
-            }
+                // Check for wall collision using height_map
+                int height_map_index = x_left + center_y * cols;
+                if (height_map[height_map_index] >= 2) {
+                    break;  // Hit a wall, stop explosion in this direction
+                }
 
-            // Right direction
+                (*object_map)[center_y_flipped][x_left] = 2;  // Use 2 for explosion
+                int frame = (i == static_cast<int>(radius)) ? 3 : 1;  // left or horizontal
+                explosion_positions.push_back({ x_left, center_y_flipped, frame });
+            }
+        }
+
+        // Horizontal explosion (Right direction)
+        for (int i = 1; i <= static_cast<int>(radius); ++i) {
             int x_right = center_x + i;
             if (x_right < cols) {
-                (*object_map)[center_y][x_right] = 2;  // Use 2 for explosion
-                int frame = (i == static_cast<int>(radius)) ? 3 : 5;  // right or horizontal
-                explosion_positions.push_back({ x_right, center_y, frame });
+                // Check for wall collision using height_map
+                int height_map_index = x_right + center_y * cols;
+                if (height_map[height_map_index] >= 2) {
+                    break;  // Hit a wall, stop explosion in this direction
+                }
+
+                (*object_map)[center_y_flipped][x_right] = 2;  // Use 2 for explosion
+                int frame = (i == static_cast<int>(radius)) ? 4 : 1;  // right or horizontal
+                explosion_positions.push_back({ x_right, center_y_flipped, frame });
             }
         }
 
@@ -98,7 +131,8 @@ void Explosion::update(float dt)
     if (timer <= 0.0f) {
         // Clear all explosion positions from object_map
         for (const auto& pos : explosion_positions) {
-            (*object_map)[pos.tile_y][pos.tile_x] = 0;
+            int pos_y_flipped = 12 - pos.tile_y;  // Use same flip as other functions
+            (*object_map)[pos_y_flipped][pos.tile_x] = 0;
         }
         explosion_positions.clear();
 

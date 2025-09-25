@@ -323,7 +323,7 @@ void Game::addExplosion(int tile_x, int tile_y)
 		tile_y_reversed,
 		height_map
 	);
-	new_explosion->get_sprite()->set_current_frame(6);
+	new_explosion->get_sprite()->set_current_frame(0);
 	objects.push_back(new_explosion);
 
 	std::cout << "Explosion object created and added to objects vector" << std::endl;
