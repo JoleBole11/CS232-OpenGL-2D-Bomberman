@@ -6,12 +6,15 @@ class Explosion : public GameObject
 {
 private:
     float radius;
-	std::vector<std::vector<int>>* object_map;
-	std::vector<std::vector<int>>* tile_map;
+    float timer;
+    float initial_timer;
+    std::vector<std::vector<int>>* object_map;
+    std::vector<std::vector<int>>* tile_map;
+    bool explosion_applied;
 
 public:
-	Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float rad, std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map);
+    Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float rad,
+        std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map);
 
-	void update(float dt);
+    void update(float dt);
 };
-

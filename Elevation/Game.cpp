@@ -274,40 +274,32 @@ void Game::addExplosion(int tile_x, int tile_y)
 		return;
 	}
 
-	int array_y = 12 - tile_y;
-
-	if (object_map[array_y][tile_x] != 0) {
-		return;
-	}
-
-	object_map[array_y][tile_x] = 1;
-
 	const float tile_size = 64.0f;
 	float origin_x = (width - 15 * tile_size) / 2.0f;
 	float origin_y = (height - 13 * tile_size) / 2.0f;
 
-	glm::vec2 bomb_pos(
+	glm::vec2 explosion_pos(
 		tile_x * tile_size + origin_x,
 		tile_y * tile_size + origin_y
 	);
 
 	Explosion* new_explosion = new Explosion(
-		bomb_pos,
+		explosion_pos,
 		glm::vec2(0),
 		new Sprite(
-			"resources/bombBlack.png",
+			"resources/explosionBlack.png",  // Make sure you have an explosion sprite
 			glm::vec2(tile_size),
 			1,
-			glm::vec2(3, 1)
+			glm::vec2(7, 1)  // 7 frames: center, top, bottom, left, right, vertical, horizontal
 		),
 		2.0f,
 		&object_map,
 		&tile_map
 	);
-	new_explosion->get_sprite()->set_current_frame(0);
+	new_explosion->get_sprite()->set_current_frame(6); // Start with center frame
 	objects.push_back(new_explosion);
 
-	std::cout << "Explosion created at world tile (" << tile_x << ", " << tile_y << ") array pos (" << tile_x << ", " << array_y << ")" << std::endl;
+	std::cout << "Explosion created at world tile (" << tile_x << ", " << tile_y << ")" << std::endl;
 }
 
 void Game::init_glut()
