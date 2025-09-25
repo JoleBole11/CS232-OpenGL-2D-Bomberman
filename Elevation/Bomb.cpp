@@ -40,6 +40,7 @@ void Bomb::update(float dt)
         }
         Game::game_instance->addExplosion(tile_x, tile_y);
 
-        delete this;
+        set_is_active(false);
+        set_is_visible(false);
     }
 }

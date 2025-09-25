@@ -115,7 +115,9 @@ void Game::render()
 	}
 
 	for (auto& o : objects) {
-		o->render();
+		if (o->get_is_active() && o->get_is_visible()) {
+			o->render();
+		}
 	}
 
 	for (auto& p : players) {
@@ -125,13 +127,24 @@ void Game::render()
 	glutSwapBuffers();
 }
 
-void Game::update(float delta_time) 
+void Game::update(float delta_time)
 {
 	for (auto& p : players) {
 		p->update(delta_time);
 	}
 	for (auto& o : objects) {
 		o->update(delta_time);
+	}
+
+	auto it = objects.begin();
+	while (it != objects.end()) {
+		if (!(*it)->get_is_active()) {
+			delete* it;
+			it = objects.erase(it);
+		}
+		else {
+			++it;
+		}
 	}
 }
 

@@ -5,7 +5,7 @@
 class Explosion : public GameObject
 {
 private:
-    float radius;
+    int radius;
     float timer;
     float initial_timer;
     std::vector<std::vector<int>>* object_map;
@@ -14,7 +14,7 @@ private:
     int tile_x, tile_y;
 
 public:
-    Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float rad,
+    Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, int rad,
         std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map, int tx, int ty);
     ~Explosion();
 
