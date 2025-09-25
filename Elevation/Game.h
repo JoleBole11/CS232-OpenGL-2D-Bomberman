@@ -4,6 +4,7 @@
 #include <time.h>
 #include "GameObject.h"
 #include "Player.h"
+#include "WallsEnum.h"
 
 class Game
 {
@@ -60,6 +61,7 @@ private:
     void callback_functions();
 
 public:
+
     static Game* game_instance;
 
     void addBomb(int tile_x, int tile_y);

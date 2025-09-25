@@ -162,9 +162,11 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="ObjectsEnum.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="WallsEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

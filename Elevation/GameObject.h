@@ -1,6 +1,8 @@
 #pragma once
 #include "Sprite.h"
 #include "Primitives.h"
+#include "ObjectsEnum.h"
+#include "WallsEnum.h"
 
 #include <gtc/type_ptr.hpp>
 #include <gtc/matrix_transform.hpp>

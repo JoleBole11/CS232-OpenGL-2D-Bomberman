@@ -1,5 +1,37 @@
 #include "Explosion.h"
 
+bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int frame_edge, int frame_normal)
+{
+    if (height_map[height_map_index] == 1) { // Empty check
+        (*object_map)[y][x] = Object::KILL_OBJECT;
+        int frame = (i == static_cast<int>(radius)) ? frame_edge : frame_normal;
+        explosion_positions.push_back({ x, y, frame });
+        return false;
+    }
+    else if (height_map[height_map_index] >= 2) { // Wall check
+        if ((*tile_map)[12 - y][x] == Wall::BREAKABLE) { // Destructible check
+            (*tile_map)[12 - y][x] = 0;
+            height_map[height_map_index] = 1;
+
+            (*object_map)[y][x] = Object::KILL_OBJECT;
+            int frame = 4;
+            explosion_positions.push_back({ x, y, frame_edge }); 
+        }
+        else if ((*tile_map)[12 - y][x] == Wall::RADIUS) {
+            (*tile_map)[12 - y][x] = 0;
+            height_map[height_map_index] = 1;
+            (*object_map)[y][x] = Object::PICKUP_RADIUS;
+        }
+        else if ((*tile_map)[12 - y][x] == Wall::SPEED) {
+            (*tile_map)[12 - y][x] = 0;
+            height_map[height_map_index] = 1;
+            (*object_map)[y][x] = Object::PICKUP_SPEED;
+        }
+        Game::game_instance->set_walls_destroyed(true);
+        return true;
+    }
+}
+
 Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, int rad,
     std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map, int tx, int ty, int* _height_map)
     : GameObject(pos, vel, spr)
@@ -13,8 +45,6 @@ Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, in
     tile_x = tx;
     tile_y = ty;
     height_map = _height_map;
-
-    explosion_positions.clear();
 }
 
 Explosion::~Explosion()
@@ -46,7 +76,7 @@ void Explosion::update(float dt)
             return;
         }
 
-        (*object_map)[center_y][center_x] = 2;
+        (*object_map)[center_y][center_x] = Object::KILL_OBJECT;
         explosion_positions.push_back({ center_x, center_y, 0 });
 
         // Vertical Up
@@ -56,24 +86,7 @@ void Explosion::update(float dt)
 			if (world_y_up < rows && world_y_up >= 0) { // Bounds check
                 int height_map_index = center_x + world_y_up * cols;
 
-				if (height_map[height_map_index] == 1) { // Empty check
-                    (*object_map)[world_y_up][center_x] = 2;
-                    int frame = (i == static_cast<int>(radius)) ? 6 : 2;
-                    explosion_positions.push_back({ center_x, world_y_up, frame });
-                }
-				else if (height_map[height_map_index] >= 2) { // Wall check
-					if ((*tile_map)[12 - world_y_up][center_x] == 1) { // Destructible check
-                        (*tile_map)[12 - world_y_up][center_x] = 0;
-                        height_map[height_map_index] = 1;
-						std::cout << "Wall destroyed at (" << center_x << ", " << world_y_up << ")" << std::endl;
-
-                        (*object_map)[world_y_up][center_x] = 2;
-                        int frame = 6;
-                        explosion_positions.push_back({ center_x, world_y_up, frame });
-						Game::game_instance->set_walls_destroyed(true);
-                    }
-                    break;
-                }
+				if (wall_type_check(height_map_index, world_y_up, center_x, i, 6, 2)) break;
             }
         }
 
@@ -84,24 +97,7 @@ void Explosion::update(float dt)
 			if (world_y_down >= 0 && world_y_down < rows) { // Bounds check
                 int height_map_index = center_x + world_y_down * cols;
 
-				if (height_map[height_map_index] == 1) { // Empty check
-                    (*object_map)[world_y_down][center_x] = 2;
-                    int frame = (i == static_cast<int>(radius)) ? 5 : 2;
-                    explosion_positions.push_back({ center_x, world_y_down, frame });
-                }
-				else if (height_map[height_map_index] >= 2) { // Wall check
-					if ((*tile_map)[12 - world_y_down][center_x] == 1) { // Destructible check
-                        (*tile_map)[12 - world_y_down][center_x] = 0;
-                        height_map[height_map_index] = 1;
-                        std::cout << "Wall destroyed at (" << center_x << ", " << world_y_down << ")" << std::endl;
-
-                        (*object_map)[world_y_down][center_x] = 2;
-                        int frame = 5;
-                        explosion_positions.push_back({ center_x, world_y_down, frame });
-                        Game::game_instance->set_walls_destroyed(true);
-                    }
-                    break;
-                }
+				if (wall_type_check(height_map_index, world_y_down, center_x, i, 5, 2)) break;
             }
         }
 
@@ -111,23 +107,7 @@ void Explosion::update(float dt)
 			if (x_left >= 0) { // Bounds check
                 int height_map_index = x_left + center_y * cols;
 
-				if (height_map[height_map_index] == 1) { // Empty check
-                    (*object_map)[center_y][x_left] = 2;
-                    int frame = (i == static_cast<int>(radius)) ? 3 : 1;
-                    explosion_positions.push_back({ x_left, center_y, frame });
-                }
-				else if (height_map[height_map_index] >= 2) { // Wall check
-					if ((*tile_map)[12 - center_y][x_left] == 1) { // Destructible check
-                        (*tile_map)[12 - center_y][x_left] = 0;
-                        height_map[height_map_index] = 1;
-
-                        (*object_map)[center_y][x_left] = 2;
-                        int frame = 3;
-                        explosion_positions.push_back({ x_left, center_y, frame });
-                        Game::game_instance->set_walls_destroyed(true);
-                    }
-                    break;
-                }
+				if (wall_type_check(height_map_index, center_y, x_left, i, 3, 1)) break;
             }
         }
 
@@ -137,23 +117,7 @@ void Explosion::update(float dt)
 			if (x_right < cols) { // Bounds check
                 int height_map_index = x_right + center_y * cols;
 
-                if (height_map[height_map_index] == 1) { // Empty check
-                    (*object_map)[center_y][x_right] = 2;
-                    int frame = (i == static_cast<int>(radius)) ? 4 : 1;
-                    explosion_positions.push_back({ x_right, center_y, frame });
-                }
-                else if (height_map[height_map_index] >= 2) { // Wall check
-					if ((*tile_map)[12 - center_y][x_right] == 1) { // Destructible check
-                        (*tile_map)[12 - center_y][x_right] = 0;
-                        height_map[height_map_index] = 1;
-
-                        (*object_map)[center_y][x_right] = 2;
-                        int frame = 4;
-                        explosion_positions.push_back({ x_right, center_y, 4 });
-                        Game::game_instance->set_walls_destroyed(true);
-                    }
-                    break;
-                }
+				if (wall_type_check(height_map_index, center_y, x_right, i, 4, 1)) break;
             }
         }
 

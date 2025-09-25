@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Bomb.h"
 #include "Explosion.h"
+#include "ObjectsEnum.h"
 
 Game* Game::game_instance = nullptr;
 const float tile_size = 64.0f;
@@ -81,8 +82,7 @@ bool Game::load_textures()
 
 			int wall_type = tile_map[row][col];
 
-			if (wall_type != 0) {
-				int frame = (wall_type == 1) ? 1 : 0;
+			if (wall_type == Wall::BREAKABLE) {
 				GameObject* tile = new GameObject(
 					pos,
 					glm::vec2(0),
@@ -93,7 +93,51 @@ bool Game::load_textures()
 						glm::vec2(2, 1)
 					)
 				);
-				tile->get_sprite()->set_current_frame(frame);
+				tile->get_sprite()->set_current_frame(1);
+				tiles.push_back(tile);
+			}
+			else if (wall_type == Wall::UNBREAKABLE) {
+				GameObject* tile = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/walls.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(2, 1)
+					)
+				);
+				tile->get_sprite()->set_current_frame(0);
+				tiles.push_back(tile);
+			}
+			else if (wall_type == Wall::SPEED)
+			{
+				GameObject* tile = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/pickupSpeedWall.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(1)
+					)
+				);
+				tile->get_sprite()->set_current_frame(0);
+				tiles.push_back(tile);
+			}
+			else if (wall_type == Wall::RADIUS)
+			{
+				GameObject* tile = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/pickupRadiusWall.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(1)
+					)
+				);
+				tile->get_sprite()->set_current_frame(0);
 				tiles.push_back(tile);
 			}
 		}
@@ -194,10 +238,10 @@ void Game::init_game()
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, Wall::SPEED, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
@@ -286,7 +330,7 @@ void Game::addBomb(int tile_x, int tile_y) {
 		return;
 	}
 
-	object_map[tile_y_reversed][tile_x] = 1;
+	object_map[tile_y_reversed][tile_x] = Object::BOMB;
 
 	const float tile_size = 64.0f;
 	float origin_x = (width - 15 * tile_size) / 2.0f;
@@ -380,8 +424,7 @@ void Game::rebuild_tiles()
 
 			int wall_type = tile_map[row][col];
 
-			if (wall_type != 0) {
-				int frame = (wall_type == 1) ? 1 : 0;
+			if (wall_type == Wall::BREAKABLE) {
 				GameObject* tile = new GameObject(
 					pos,
 					glm::vec2(0),
@@ -392,8 +435,81 @@ void Game::rebuild_tiles()
 						glm::vec2(2, 1)
 					)
 				);
-				tile->get_sprite()->set_current_frame(frame);
+				tile->get_sprite()->set_current_frame(1);
 				tiles.push_back(tile);
+			}
+			else if (wall_type == Wall::UNBREAKABLE) {
+				GameObject* tile = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/walls.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(2, 1)
+					)
+				);
+				tile->get_sprite()->set_current_frame(0);
+				tiles.push_back(tile);
+			}
+			else if (wall_type == Wall::SPEED)
+			{
+				GameObject* tile = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/pickupSpeedWall.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(1)
+					)
+				);
+				tile->get_sprite()->set_current_frame(0);
+				tiles.push_back(tile);
+			}
+			else if (wall_type == Wall::RADIUS)
+			{
+				GameObject* tile = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/pickupRadiusWall.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(1)
+					)
+				);
+				tile->get_sprite()->set_current_frame(0);
+				tiles.push_back(tile);
+			}
+		}
+	}
+
+	for (int row = 0; row < object_map.size(); ++row) {
+		for (int col = 0; col < object_map[row].size(); ++col) {
+			float origin_x = (width - object_map[0].size() * tile_size) / 2.0f;
+			float origin_y = (height - object_map.size() * tile_size) / 2.0f;
+
+			glm::vec2 pos(
+				col * tile_size + origin_x,
+				row * tile_size + origin_y
+			);
+
+			int object_type = object_map[row][col];
+
+			if (object_type == Object::PICKUP_SPEED) {
+				GameObject* object = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/powerUpLR.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(1)
+					)
+				);
+				object->get_sprite()->set_current_frame(0);
+				objects.push_back(object);
 			}
 		}
 	}
