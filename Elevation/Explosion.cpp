@@ -1,6 +1,5 @@
 #include "Explosion.h"
 
-
 Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, int rad,
     std::vector<std::vector<int>>* _object_map, std::vector<std::vector<int>>* _tile_map, int tx, int ty, int* _height_map)
     : GameObject(pos, vel, spr)
@@ -13,7 +12,10 @@ Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, in
     explosion_applied = false;
     tile_x = tx;
     tile_y = ty;
-	height_map = _height_map;
+    height_map = _height_map;
+
+    // Store all explosion positions for rendering
+    explosion_positions.clear();
 }
 
 Explosion::~Explosion()
@@ -47,43 +49,26 @@ void Explosion::update(float dt)
             return;
         }
 
-        // Explosion sprite frame indices
-        const int frame_center = 6;
-        const int frame_top = 0;
-        const int frame_bottom = 1;
-        const int frame_left = 2;
-        const int frame_right = 3;
-        const int frame_vertical = 4;
-        const int frame_horizontal = 5;
-
         // Set center explosion
-        (*object_map)[center_y][center_x] = frame_center;
-        std::cout << "Set center at array[" << center_y << "][" << center_x << "] = " << frame_center << std::endl;
+        (*object_map)[center_y][center_x] = 2;  // Use 2 for explosion
+        explosion_positions.push_back({ center_x, center_y, 6 });  // frame 6 for center
 
         // Vertical explosion
         for (int i = 1; i <= static_cast<int>(radius); ++i) {
-            // Up direction (positive Y)
+            // Up direction
             int y_up = center_y + i;
             if (y_up < rows) {
-                if (i == static_cast<int>(radius)) {
-                    (*object_map)[y_up][center_x] = frame_top;
-                }
-                else {
-                    (*object_map)[y_up][center_x] = frame_vertical;
-                }
-                std::cout << "Set up explosion at array[" << y_up << "][" << center_x << "]" << std::endl;
+                (*object_map)[y_up][center_x] = 2;  // Use 2 for explosion
+                int frame = (i == static_cast<int>(radius)) ? 0 : 4;  // top or vertical
+                explosion_positions.push_back({ center_x, y_up, frame });
             }
 
-            // Down direction (negative Y)
+            // Down direction
             int y_down = center_y - i;
             if (y_down >= 0) {
-                if (i == static_cast<int>(radius)) {
-                    (*object_map)[y_down][center_x] = frame_bottom;
-                }
-                else {
-                    (*object_map)[y_down][center_x] = frame_vertical;
-                }
-                std::cout << "Set down explosion at array[" << y_down << "][" << center_x << "]" << std::endl;
+                (*object_map)[y_down][center_x] = 2;  // Use 2 for explosion
+                int frame = (i == static_cast<int>(radius)) ? 1 : 4;  // bottom or vertical
+                explosion_positions.push_back({ center_x, y_down, frame });
             }
         }
 
@@ -92,25 +77,17 @@ void Explosion::update(float dt)
             // Left direction
             int x_left = center_x - i;
             if (x_left >= 0) {
-                if (i == static_cast<int>(radius)) {
-                    (*object_map)[center_y][x_left] = frame_left;
-                }
-                else {
-                    (*object_map)[center_y][x_left] = frame_horizontal;
-                }
-                std::cout << "Set left explosion at array[" << center_y << "][" << x_left << "]" << std::endl;
+                (*object_map)[center_y][x_left] = 2;  // Use 2 for explosion
+                int frame = (i == static_cast<int>(radius)) ? 2 : 5;  // left or horizontal
+                explosion_positions.push_back({ x_left, center_y, frame });
             }
 
             // Right direction
             int x_right = center_x + i;
             if (x_right < cols) {
-                if (i == static_cast<int>(radius)) {
-                    (*object_map)[center_y][x_right] = frame_right;
-                }
-                else {
-                    (*object_map)[center_y][x_right] = frame_horizontal;
-                }
-                std::cout << "Set right explosion at array[" << center_y << "][" << x_right << "]" << std::endl;
+                (*object_map)[center_y][x_right] = 2;  // Use 2 for explosion
+                int frame = (i == static_cast<int>(radius)) ? 3 : 5;  // right or horizontal
+                explosion_positions.push_back({ x_right, center_y, frame });
             }
         }
 
@@ -119,42 +96,41 @@ void Explosion::update(float dt)
 
     // Remove explosion after timer expires
     if (timer <= 0.0f) {
-        const int tile_size = 64;
-        const int cols = 15;
-        const int rows = 13;
-
-        float origin_x = (960 - cols * tile_size) / 2.0f;
-        float origin_y = (832 - rows * tile_size) / 2.0f;
-
-        int center_x = static_cast<int>((get_position().x - origin_x) / tile_size);
-        int center_y = static_cast<int>((get_position().y - origin_y) / tile_size);
-
-        // Clear explosion pattern with bounds checking
-        if (center_x >= 0 && center_x < cols && center_y >= 0 && center_y < rows) {
-            (*object_map)[center_y][center_x] = 0;
-
-            // Clear vertical
-            for (int i = 1; i <= static_cast<int>(radius); ++i) {
-                if (center_y + i < rows) {
-                    (*object_map)[center_y + i][center_x] = 0;
-                }
-                if (center_y - i >= 0) {
-                    (*object_map)[center_y - i][center_x] = 0;
-                }
-            }
-
-            // Clear horizontal
-            for (int i = 1; i <= static_cast<int>(radius); ++i) {
-                if (center_x - i >= 0) {
-                    (*object_map)[center_y][center_x - i] = 0;
-                }
-                if (center_x + i < cols) {
-                    (*object_map)[center_y][center_x + i] = 0;
-                }
-            }
+        // Clear all explosion positions from object_map
+        for (const auto& pos : explosion_positions) {
+            (*object_map)[pos.tile_y][pos.tile_x] = 0;
         }
+        explosion_positions.clear();
 
         set_is_active(false);
         set_is_visible(false);
+    }
+}
+
+void Explosion::render()
+{
+    if (!get_is_visible() || explosion_positions.empty()) return;
+
+    const int tile_size = 64;
+    const int cols = 15;
+    const int rows = 13;
+    float origin_x = (960 - cols * tile_size) / 2.0f;
+    float origin_y = (832 - rows * tile_size) / 2.0f;
+
+    // Render sprite at each explosion position with appropriate frame
+    for (const auto& pos : explosion_positions) {
+        glPushMatrix();
+
+        // Calculate world position for this tile
+        float world_x = pos.tile_x * tile_size + origin_x;
+        float world_y = pos.tile_y * tile_size + origin_y;
+
+        glTranslatef(world_x, world_y, 0.0f);
+
+        // Set the appropriate frame and render
+        get_sprite()->set_current_frame(pos.frame);
+        get_sprite()->render();
+
+        glPopMatrix();
     }
 }
