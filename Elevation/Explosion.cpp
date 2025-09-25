@@ -80,7 +80,7 @@ void Explosion::update(float dt)
         explosion_positions.push_back({ center_x, center_y, 0 });
 
         // Vertical Up
-        for (int i = 1; i <= static_cast<int>(radius); ++i) {
+        for (int i = 1; i <= radius; ++i) {
             int world_y_up = center_y + i;
 
 			if (world_y_up < rows && world_y_up >= 0) { // Bounds check
@@ -91,7 +91,7 @@ void Explosion::update(float dt)
         }
 
         // Vertical Down
-        for (int i = 1; i <= static_cast<int>(radius); ++i) {
+        for (int i = 1; i <= radius; ++i) {
             int world_y_down = center_y - i;
 
 			if (world_y_down >= 0 && world_y_down < rows) { // Bounds check
@@ -102,7 +102,7 @@ void Explosion::update(float dt)
         }
 
         // Horizontal Left
-        for (int i = 1; i <= static_cast<int>(radius); ++i) {
+        for (int i = 1; i <= radius; ++i) {
             int x_left = center_x - i;
 			if (x_left >= 0) { // Bounds check
                 int height_map_index = x_left + center_y * cols;
@@ -112,7 +112,7 @@ void Explosion::update(float dt)
         }
 
 		// Horizontal Right
-        for (int i = 1; i <= static_cast<int>(radius); ++i) {
+        for (int i = 1; i <= radius; ++i) {
             int x_right = center_x + i;
 			if (x_right < cols) { // Bounds check
                 int height_map_index = x_right + center_y * cols;

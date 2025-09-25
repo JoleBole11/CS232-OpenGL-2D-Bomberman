@@ -238,10 +238,10 @@ void Game::init_game()
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, Wall::SPEED, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, Wall::RADIUS, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
@@ -319,7 +319,7 @@ void Game::cleanup()
     mapV.clear();
 }
 
-void Game::addBomb(int tile_x, int tile_y) {
+void Game::addBomb(int tile_x, int tile_y, int radius) {
 	if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
 		return;
 	}
@@ -353,7 +353,8 @@ void Game::addBomb(int tile_x, int tile_y) {
 		3.0f,
 		&object_map,    
 		tile_x,         
-		tile_y_reversed
+		tile_y_reversed,
+		radius
 	);
 	new_bomb->get_sprite()->set_current_frame(2);
 	objects.push_back(new_bomb);
@@ -361,7 +362,7 @@ void Game::addBomb(int tile_x, int tile_y) {
 	std::cout << "Bomb created at world tile (" << tile_x << ", " << tile_y << ") array pos (" << tile_x << ", " << tile_y_reversed << ")" << std::endl;
 }
 
-void Game::addExplosion(int tile_x, int tile_y)
+void Game::addExplosion(int tile_x, int tile_y, int radius)
 {
 	
 
@@ -393,7 +394,7 @@ void Game::addExplosion(int tile_x, int tile_y)
 			1,
 			glm::vec2(7, 1)
 		),
-		2.0f,
+		radius,
 		&object_map,
 		&tile_map,
 		tile_x,
@@ -511,6 +512,42 @@ void Game::rebuild_tiles()
 				object->get_sprite()->set_current_frame(0);
 				objects.push_back(object);
 			}
+			else if (object_type == Object::PICKUP_RADIUS) {
+				GameObject* object = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/powerUpUD.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(1)
+					)
+				);
+				object->get_sprite()->set_current_frame(0);
+				objects.push_back(object);
+			}
+		}
+	}
+}
+
+void Game::removeObjectAt(int tile_x, int tile_y) {
+	const float tile_size = 64.0f;
+	float origin_x = (width - 15 * tile_size) / 2.0f;
+	float origin_y = (height - 13 * tile_size) / 2.0f;
+
+	glm::vec2 expected_pos(
+		tile_x * tile_size + origin_x,
+		tile_y * tile_size + origin_y
+	);
+
+	for (auto& obj : objects) {
+		glm::vec2 obj_pos = obj->get_position();
+
+		if (abs(obj_pos.x - expected_pos.x) < 1.0f &&
+			abs(obj_pos.y - expected_pos.y) < 1.0f) {
+			obj->set_is_active(false);
+			obj->set_is_visible(false);
+			break;
 		}
 	}
 }

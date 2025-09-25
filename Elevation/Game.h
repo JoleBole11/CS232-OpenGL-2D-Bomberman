@@ -64,10 +64,11 @@ public:
 
     static Game* game_instance;
 
-    void addBomb(int tile_x, int tile_y);
-    void addExplosion(int tile_x, int tile_y);
+    void addBomb(int tile_x, int tile_y, int radius);
+    void addExplosion(int tile_x, int tile_y, int radius);
     void rebuild_tiles();
     void set_walls_destroyed(bool destroyed) { walls_destroyed = destroyed; }
+    void removeObjectAt(int tile_x, int tile_y);
 
     Game(int argc, char** argv,
         const char* title,

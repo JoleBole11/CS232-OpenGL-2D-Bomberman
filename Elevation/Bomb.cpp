@@ -1,6 +1,6 @@
 #include "Bomb.h"
 
-Bomb::Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, std::vector<std::vector<int>>* _object_map, int tx, int ty)
+Bomb::Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, std::vector<std::vector<int>>* _object_map, int tx, int ty, int rad)
     : GameObject(pos, vel, spr) 
 {
     timer = time;
@@ -8,6 +8,7 @@ Bomb::Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, 
 	object_map = _object_map;
 	tile_x = tx;
 	tile_y = ty;
+    radius = rad;
 }
 
 Bomb::~Bomb()
@@ -38,7 +39,7 @@ void Bomb::update(float dt)
             tile_x >= 0 && tile_x < (*object_map)[tile_y].size()) {
             (*object_map)[tile_y][tile_x] = 0;
         }
-        Game::game_instance->addExplosion(tile_x, 12 - tile_y);
+        Game::game_instance->addExplosion(tile_x, 12 - tile_y, radius);
 
         set_is_active(false);
         set_is_visible(false);

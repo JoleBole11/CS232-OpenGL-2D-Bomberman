@@ -81,7 +81,7 @@ void Player::update(float dt)
     }
 
     if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
-        Game::game_instance->addBomb(tile_x, tile_y);
+        Game::game_instance->addBomb(tile_x, tile_y, bomb_radius);
         bomb_cooldown = 3.0f;
     }
 
@@ -91,17 +91,23 @@ void Player::update(float dt)
     if ((*object_map)[tile_y][tile_x] == Object::PICKUP_SPEED)
     {
         set_speed(speed + 50);
-		(*object_map)[tile_y][tile_x] = 0;
+        (*object_map)[tile_y][tile_x] = 0;
+
+        Game::game_instance->removeObjectAt(tile_x, tile_y);
+
         Game::game_instance->set_walls_destroyed(true);
-		set_speed_timer(5.0f);
-		speed_powered = true;
+        set_speed_timer(5.0f);
+        speed_powered = true;
     }
     if ((*object_map)[tile_y][tile_x] == Object::PICKUP_RADIUS)
     {
-		set_bomb_radius(bomb_radius + 2);
-		(*object_map)[tile_y][tile_x] = 0;
-		set_radius_timer(5.0f);
-		radius_powered = true;
+        set_bomb_radius(bomb_radius + 2);
+        (*object_map)[tile_y][tile_x] = 0;
+
+        Game::game_instance->removeObjectAt(tile_x, tile_y);
+
+        set_radius_timer(5.0f);
+        radius_powered = true;
     }
 
     static float frame_timer = 0.0f;
