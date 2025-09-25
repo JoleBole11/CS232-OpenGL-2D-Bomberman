@@ -111,7 +111,9 @@ void Game::render()
 	}
 
 	for (auto& t : tiles) {
-		t->render();
+		if (t->get_is_active() && t->get_is_visible()) {
+			t->render();
+		}
 	}
 
 	for (auto& o : objects) {
@@ -121,7 +123,9 @@ void Game::render()
 	}
 
 	for (auto& p : players) {
-		p->render();
+		if (p->get_is_active() && p->get_is_visible()) {
+			p->render();
+		}
 	}
 
 	glutSwapBuffers();
@@ -144,6 +148,17 @@ void Game::update(float delta_time)
 		}
 	}
 
+	auto t = tiles.begin();
+	while (t != tiles.end()) {
+		if (!(*t)->get_is_active()) {
+			delete* t;
+			t = tiles.erase(t);
+		}
+		else {
+			++t;
+		}
+	}
+
 	for (auto& o : objects) {
 		o->update(delta_time);
 	}
@@ -157,6 +172,11 @@ void Game::update(float delta_time)
 		else {
 			++ob;
 		}
+	}
+
+	if (walls_destroyed) {
+		rebuild_tiles();
+		walls_destroyed = false;
 	}
 }
 
@@ -190,7 +210,7 @@ void Game::init_game()
         2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
         2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
         2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
         2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
         2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
         2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
@@ -299,7 +319,7 @@ void Game::addBomb(int tile_x, int tile_y) {
 
 void Game::addExplosion(int tile_x, int tile_y)
 {
-	std::cout << "addExplosion called with tile_x=" << tile_x << ", tile_y=" << tile_y << std::endl;
+	
 
 	if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
 		std::cout << "Explosion coordinates out of bounds!" << std::endl;
@@ -307,6 +327,7 @@ void Game::addExplosion(int tile_x, int tile_y)
 	}
 
 	int tile_y_reversed = 12 - tile_y;
+	std::cout << "Explosion created at world tile (" << tile_x << ", " << tile_y << ") array pos (" << tile_x << ", " << tile_y_reversed << ")" << std::endl;
 
 	const float tile_size = 64.0f;
 	float origin_x = (width - 15 * tile_size) / 2.0f;
@@ -339,6 +360,43 @@ void Game::addExplosion(int tile_x, int tile_y)
 	objects.push_back(new_explosion);
 
 	std::cout << "Explosion object created and added to objects vector" << std::endl;
+}
+
+void Game::rebuild_tiles()
+{
+	for (auto& t : tiles) delete t;
+	tiles.clear();
+
+	for (int row = 0; row < tile_map.size(); ++row) {
+		for (int col = 0; col < tile_map[row].size(); ++col) {
+			float origin_x = (width - tile_map[0].size() * tile_size) / 2.0f;
+			float origin_y = (height - tile_map.size() * tile_size) / 2.0f;
+			int flipped_row = tile_map.size() - 1 - row;
+
+			glm::vec2 pos(
+				col * tile_size + origin_x,
+				flipped_row * tile_size + origin_y
+			);
+
+			int wall_type = tile_map[row][col];
+
+			if (wall_type != 0) {
+				int frame = (wall_type == 1) ? 1 : 0;
+				GameObject* tile = new GameObject(
+					pos,
+					glm::vec2(0),
+					new Sprite(
+						"resources/walls.png",
+						glm::vec2(tile_size),
+						1,
+						glm::vec2(2, 1)
+					)
+				);
+				tile->get_sprite()->set_current_frame(frame);
+				tiles.push_back(tile);
+			}
+		}
+	}
 }
 
 void Game::init_glut()

@@ -46,6 +46,7 @@ private:
 
     int previous_time;
     float delta_time = 0.0f;
+    bool walls_destroyed = false;
 
     // Functions
     bool load_textures();
@@ -63,6 +64,8 @@ public:
 
     void addBomb(int tile_x, int tile_y);
     void addExplosion(int tile_x, int tile_y);
+    void rebuild_tiles();
+    void set_walls_destroyed(bool destroyed) { walls_destroyed = destroyed; }
 
     Game(int argc, char** argv,
         const char* title,
