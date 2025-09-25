@@ -16,6 +16,7 @@ private:
 
 public:
     Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* object_map);
+    ~Player();
 
     void update(float dt);
 };

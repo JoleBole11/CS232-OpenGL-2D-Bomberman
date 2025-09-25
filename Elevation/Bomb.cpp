@@ -10,6 +10,10 @@ Bomb::Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, 
 	tile_y = ty;
 }
 
+Bomb::~Bomb()
+{
+}
+
 void Bomb::update(float dt)
 {
     Sprite* sprite = this->get_sprite();
@@ -36,7 +40,6 @@ void Bomb::update(float dt)
         }
         Game::game_instance->addExplosion(tile_x, tile_y);
 
-        set_is_active(false);
-        set_is_visible(false);
+        delete this;
     }
 }

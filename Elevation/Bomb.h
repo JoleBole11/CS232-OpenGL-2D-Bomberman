@@ -15,6 +15,7 @@ private:
 public:
     Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time,
         std::vector<std::vector<int>>* _object_map, int tx, int ty);
+    ~Bomb();
 
     void update(float dt);
 };

@@ -10,6 +10,10 @@ Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_m
     bomb_cooldown = 0.0f;
 }
 
+Player::~Player()
+{
+}
+
 void Player::update(float dt)
 {
     if (bomb_cooldown >= 0.0f) {

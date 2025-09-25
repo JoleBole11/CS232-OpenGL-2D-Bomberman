@@ -214,16 +214,20 @@ void Game::init_game()
 
 void Game::cleanup()
 {
-	for (auto& object : objects) {
-		delete object;
-	}
-	for (auto& tile : tiles) {
-		delete tile;
-	}
+    for (auto& object : objects) {
+        delete object;
+    }
+    objects.clear();
 
-	for (auto& map : mapV) {
-		delete map;
-	}
+    for (auto& tile : tiles) {
+        delete tile;
+    }
+    tiles.clear();
+
+    for (auto& map : mapV) {
+        delete map;
+    }
+    mapV.clear();
 }
 
 void Game::addBomb(int tile_x, int tile_y) {
@@ -231,13 +235,13 @@ void Game::addBomb(int tile_x, int tile_y) {
 		return;
 	}
 
-	int array_y = 12 - tile_y;
+	int tile_y_reversed = 12 - tile_y;
 
-	if (object_map[array_y][tile_x] != 0) {
+	if (object_map[tile_y_reversed][tile_x] != 0) {
 		return;
 	}
 
-	object_map[array_y][tile_x] = 1;
+	object_map[tile_y_reversed][tile_x] = 1;
 
 	const float tile_size = 64.0f;
 	float origin_x = (width - 15 * tile_size) / 2.0f;
@@ -260,19 +264,24 @@ void Game::addBomb(int tile_x, int tile_y) {
 		3.0f,
 		&object_map,    
 		tile_x,         
-		array_y         
+		tile_y_reversed
 	);
 	new_bomb->get_sprite()->set_current_frame(0);
 	objects.push_back(new_bomb);
 
-	std::cout << "Bomb created at world tile (" << tile_x << ", " << tile_y << ") array pos (" << tile_x << ", " << array_y << ")" << std::endl;
+	std::cout << "Bomb created at world tile (" << tile_x << ", " << tile_y << ") array pos (" << tile_x << ", " << tile_y_reversed << ")" << std::endl;
 }
 
 void Game::addExplosion(int tile_x, int tile_y)
 {
+	std::cout << "addExplosion called with tile_x=" << tile_x << ", tile_y=" << tile_y << std::endl;
+
 	if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
+		std::cout << "Explosion coordinates out of bounds!" << std::endl;
 		return;
 	}
+
+	int tile_y_reversed = 12 - tile_y;
 
 	const float tile_size = 64.0f;
 	float origin_x = (width - 15 * tile_size) / 2.0f;
@@ -283,23 +292,27 @@ void Game::addExplosion(int tile_x, int tile_y)
 		tile_y * tile_size + origin_y
 	);
 
+	std::cout << "Creating explosion at world pos (" << explosion_pos.x << ", " << explosion_pos.y << ")" << std::endl;
+
 	Explosion* new_explosion = new Explosion(
 		explosion_pos,
 		glm::vec2(0),
 		new Sprite(
-			"resources/explosionBlack.png",  // Make sure you have an explosion sprite
+			"resources/explosionBlack.png",
 			glm::vec2(tile_size),
 			1,
-			glm::vec2(7, 1)  // 7 frames: center, top, bottom, left, right, vertical, horizontal
+			glm::vec2(7, 1)
 		),
 		2.0f,
 		&object_map,
-		&tile_map
+		&tile_map,
+		tile_x,
+		tile_y_reversed
 	);
-	new_explosion->get_sprite()->set_current_frame(6); // Start with center frame
+	new_explosion->get_sprite()->set_current_frame(6);
 	objects.push_back(new_explosion);
 
-	std::cout << "Explosion created at world tile (" << tile_x << ", " << tile_y << ")" << std::endl;
+	std::cout << "Explosion object created and added to objects vector" << std::endl;
 }
 
 void Game::init_glut()
