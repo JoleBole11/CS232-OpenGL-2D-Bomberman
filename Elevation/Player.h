@@ -1,7 +1,9 @@
 #pragma once
 #include "GameObject.h"
 #include "Input.h"
-#include "Game.h"
+
+// Forward declaration
+class GameScene;
 
 class Player :
     public GameObject
@@ -15,11 +17,11 @@ private:
     float bomb_cooldown = 0.0f;
     float speed = 100;
     float radius_timer = 0;
-	float speed_timer = 0;
+    float speed_timer = 0;
 
     bool dead = false;
-	bool radius_powered = false;
-	bool speed_powered = false;
+    bool radius_powered = false;
+    bool speed_powered = false;
 
     bool can_move_to_position(const glm::vec2& position);
 
@@ -28,16 +30,16 @@ public:
     ~Player();
 
     float get_speed() const { return speed; };
-	void set_speed(float s) { speed = s; };
+    void set_speed(float s) { speed = s; };
 
-	int get_bomb_radius() const { return bomb_radius; };
-	void set_bomb_radius(int r) { bomb_radius = r; };
+    int get_bomb_radius() const { return bomb_radius; };
+    void set_bomb_radius(int r) { bomb_radius = r; };
 
-	float get_radius_timer() const { return radius_timer; };
-	void set_radius_timer(float t) { radius_timer = t; };
+    float get_radius_timer() const { return radius_timer; };
+    void set_radius_timer(float t) { radius_timer = t; };
 
-	float get_speed_timer() const { return speed_timer; };
-	void set_speed_timer(float t) { speed_timer = t; };
+    float get_speed_timer() const { return speed_timer; };
+    void set_speed_timer(float t) { speed_timer = t; };
 
     void update(float dt);
 };

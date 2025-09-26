@@ -11,12 +11,14 @@ private:
 
 public:
     static GameInstance* getInstance();
-    static GameScene* getCurrentGameScene();
+    GameScene* getCurrentGameScene() const { return currentGameScene; }
 
     void setCurrentGameScene(GameScene* scene);
 
+
     ~GameInstance() = default;
 
+    // Delete copy constructor and assignment operator
     GameInstance(const GameInstance&) = delete;
     GameInstance& operator=(const GameInstance&) = delete;
 };

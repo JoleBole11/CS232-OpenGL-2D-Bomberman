@@ -1,7 +1,9 @@
 #pragma once
 #include "GameObject.h"
-#include "Game.h"
 #include <vector>
+
+// Forward declaration
+class GameScene;
 
 class Explosion : public GameObject
 {
@@ -22,7 +24,7 @@ private:
     };
     std::vector<ExplosionTile> explosion_positions;
 
-	bool wall_type_check(int height_map_index, int y, int x, int i, int frame_edge, int frame_normal);
+    bool wall_type_check(int height_map_index, int y, int x, int i, int frame_edge, int frame_normal);
 
 public:
     Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, int rad,

@@ -6,6 +6,9 @@
 #include "Input.h"
 #include <vector>
 
+// Forward declaration to avoid circular dependency
+class GameInstance;
+
 class GameScene : public Scene {
 private:
     // Game objects
@@ -42,8 +45,8 @@ public:
     void update(float deltaTime) override;
     void render() override;
     void cleanup() override;
-	void onEnter() override;
-	void onExit() override;
+    void onEnter() override;
+    void onExit() override;
 
     void handleKeyboard(unsigned char key, int x, int y) override;
 

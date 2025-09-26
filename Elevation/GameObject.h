@@ -3,6 +3,7 @@
 #include "Primitives.h"
 #include "ObjectsEnum.h"
 #include "WallsEnum.h"
+#include <vector>
 
 #include <gtc/type_ptr.hpp>
 #include <gtc/matrix_transform.hpp>

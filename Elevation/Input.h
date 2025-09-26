@@ -22,6 +22,7 @@ private:
     static bool _rightMouse;
     static bool _leftMouseDown;
     static bool _rightMouseDown;
+
 public:
     static void setCallbackFunctions();
     static void update();
@@ -40,7 +41,9 @@ public:
     static bool getLeftMouseDown();
     static bool getLeftMouse();
     static bool getRightMouseDown();
-private:
+
     static void updateMouse(int x, int y);
+
+private:
     static void updateCursorLock();
 };
