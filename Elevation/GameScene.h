@@ -8,6 +8,14 @@
 
 // Forward declaration to avoid circular dependency
 class GameInstance;
+class MainMenuScene;
+
+enum class CharacterType {
+    WHITE = 0,
+    BLACK = 1,
+    BLUE = 2,
+    RED = 3
+};
 
 class GameScene : public Scene {
 private:
@@ -25,6 +33,10 @@ private:
     // Game state
     bool walls_destroyed;
 
+    // Character selection
+    CharacterType player1Character;
+    CharacterType player2Character;
+
     // Constants
     const int width = 960;
     const int height = 832;
@@ -36,6 +48,8 @@ private:
     void updateObjects(float deltaTime);
     void cleanupInactiveObjects();
     void initializeMaps();
+    const char* getCharacterSpritePath(CharacterType character);
+    void initializePlayersWithCharacters();
 
 public:
     GameScene();
@@ -51,10 +65,13 @@ public:
     void handleKeyboard(unsigned char key, int x, int y) override;
 
     // Game-specific methods
-    void addBomb(int tile_x, int tile_y, int radius);
+    void addBomb(int tile_x, int tile_y, int radius, int playerId = 1);
     void addExplosion(int tile_x, int tile_y, int radius);
     void removeObjectAt(int tile_x, int tile_y);
     void setWallsDestroyed(bool destroyed) { walls_destroyed = destroyed; }
+
+    // Character selection
+    void setPlayerCharacters(CharacterType p1Char, CharacterType p2Char);
 
     // Getters for game state
     const std::vector<std::vector<int>>& getTileMap() const { return tile_map; }

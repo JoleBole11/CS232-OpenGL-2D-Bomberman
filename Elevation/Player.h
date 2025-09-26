@@ -11,6 +11,7 @@ class Player :
 private:
     int bomb_radius = 2;
     int* height_map;
+    int player_id;
 
     std::vector<std::vector<int>>* object_map;
 
@@ -26,7 +27,7 @@ private:
     bool can_move_to_position(const glm::vec2& position);
 
 public:
-    Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* object_map);
+    Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* object_map, int playerId = 1);
     ~Player();
 
     float get_speed() const { return speed; };
@@ -40,6 +41,8 @@ public:
 
     float get_speed_timer() const { return speed_timer; };
     void set_speed_timer(float t) { speed_timer = t; };
+
+    int get_player_id() const { return player_id; };
 
     void update(float dt);
 };
