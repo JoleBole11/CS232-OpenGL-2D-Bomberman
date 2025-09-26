@@ -101,6 +101,12 @@ void MainMenuScene::initialize() {
         new Sprite("resources/arrow.png", glm::vec2(32), 1, glm::vec2(1), true)
     );
 
+    player2Indicator = new GameObject(
+        glm::vec2(0, 0),
+        glm::vec2(0),
+        new Sprite("resources/arrow.png", glm::vec2(32), 1, glm::vec2(1), true)
+);
+
     initialized = true;
 }
 

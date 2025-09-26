@@ -111,8 +111,7 @@ void GameScene::initializeMaps() {
 }
 
 bool GameScene::loadTextures() {
-    // Clear existing objects
-    for (auto& m : mapV) delete m;
+     for (auto& m : mapV) delete m;
     mapV.clear();
     for (auto& t : tiles) delete t;
     tiles.clear();
@@ -123,7 +122,7 @@ bool GameScene::loadTextures() {
 
     // Create player 1
     Player* player1 = new Player(
-        glm::vec2(64, 64),  // Bottom-left spawn
+        glm::vec2(64, 64),
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player1Character),
@@ -135,12 +134,12 @@ bool GameScene::loadTextures() {
         &object_map,
         1  // Player ID 1
     );
-    player1->get_sprite()->set_current_frame(0);
+    player1->get_sprite()->set_current_frame(1); // Standing frame
     players.push_back(player1);
 
-    // Create player 2 - FIXED POSITION
+    // Create player 2 - FIXED POSITION AND DUPLICATE PUSH
     Player* player2 = new Player(
-        glm::vec2(832, 704),  // Top-right spawn (13*64, 11*64)
+        glm::vec2(64 * 13, 64 * 11),
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player2Character),
@@ -152,8 +151,8 @@ bool GameScene::loadTextures() {
         &object_map,
         2  // Player ID 2
     );
-    player2->get_sprite()->set_current_frame(0);
-    players.push_back(player2);  // FIXED: Was pushing player1 again
+    player2->get_sprite()->set_current_frame(1); // Standing frame
+    players.push_back(player2);
 
     // Create background map
     GameObject* map = new GameObject(

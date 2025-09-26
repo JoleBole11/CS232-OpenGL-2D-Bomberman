@@ -35,8 +35,11 @@ public:
 		sprite(spr), is_visible(true), is_active(true) {}
 
 	virtual ~GameObject() {
-		delete sprite;
-	}
+        if (sprite) {
+            delete sprite;
+            sprite = nullptr;
+        }
+    }
 
 	glm::vec2 get_position() const { return position; }
 	void set_position(const glm::vec2& new_position) { position = new_position; }
@@ -59,7 +62,12 @@ public:
 	void set_scale(const glm::vec2& new_scale) { scale = new_scale; }
 
 	Sprite* get_sprite() const { return sprite; }
-	void set_sprite(Sprite* spr) { sprite = spr; }
+	void set_sprite(Sprite* spr) {
+		if (sprite && sprite != spr) {
+			delete sprite;
+		}
+		sprite = spr;
+	}
 
 	primitive_type get_primitive_type() const { return primitive.type; }
 
