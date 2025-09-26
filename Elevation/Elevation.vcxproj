@@ -152,6 +152,7 @@
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Explosion.cpp" />
+    <ClCompile Include="GameInstance.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Input.cpp" />

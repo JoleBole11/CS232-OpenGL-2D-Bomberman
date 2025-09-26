@@ -8,25 +8,6 @@
 #include <ctime>
 #include "GameInstance.h"
 
-// GameInstance implementation
-GameInstance* GameInstance::instance = nullptr;
-
-GameInstance* GameInstance::getInstance() {
-    if (instance == nullptr) {
-        instance = new GameInstance();
-    }
-    return instance;
-}
-
-GameScene* GameInstance::getCurrentGameScene() {
-    GameInstance* inst = getInstance();
-    return inst->currentGameScene;
-}
-
-void GameInstance::setCurrentGameScene(GameScene* scene) {
-    currentGameScene = scene;
-}
-
 // GameScene implementation
 GameScene::GameScene() : Scene("Game"), height_map(nullptr), walls_destroyed(false) {
 }

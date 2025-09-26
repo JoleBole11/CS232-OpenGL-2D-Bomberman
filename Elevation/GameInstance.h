@@ -11,7 +11,7 @@ private:
 
 public:
     static GameInstance* getInstance();
-    GameScene* getCurrentGameScene() const { return currentGameScene; }
+    static GameScene* getCurrentGameScene();
 
     void setCurrentGameScene(GameScene* scene);
 
