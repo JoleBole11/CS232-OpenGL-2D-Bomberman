@@ -3,12 +3,13 @@
 #include "GameScene.h"  // Add this include
 #include "Bomb.h"
 
-Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* _object_map) :
+Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* _object_map, int playerId) :
     GameObject(pos, velocity, sprite)
 {
     height_map = _height_map;
     object_map = _object_map;
     bomb_cooldown = 0.0f;
+	player_id = playerId;
 }
 
 Player::~Player()

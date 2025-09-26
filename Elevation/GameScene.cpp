@@ -563,6 +563,72 @@ void GameScene::rebuildTiles() {
     }
 }
 
+const char* GameScene::getCharacterSpritePath(CharacterType character) {
+    switch (character) {
+    case CharacterType::WHITE:
+        return "resources/charWhite.png";
+    case CharacterType::BLACK:
+        return "resources/charBlack.png";
+    case CharacterType::BLUE:
+        return "resources/charBlue.png";
+    case CharacterType::RED:
+        return "resources/charRed.png";
+    default:
+        return "resources/charWhite.png";
+    }
+}
+
+void GameScene::setPlayerCharacters(CharacterType p1Char, CharacterType p2Char) {
+    player1Character = p1Char;
+    player2Character = p2Char;
+
+    // If already initialized, rebuild players with new characters
+    if (initialized) {
+        initializePlayersWithCharacters();
+    }
+}
+
+void GameScene::initializePlayersWithCharacters() {
+
+    for (auto& p : players) {
+        delete p;
+    }
+    players.clear();
+
+    Player* player1 = new Player(
+        glm::vec2(64, 64),
+        glm::vec2(0),
+        new Sprite(
+            getCharacterSpritePath(player1Character),
+            glm::vec2(tile_size),
+            1,
+            glm::vec2(4, 3)
+        ),
+        height_map,
+        &object_map,
+        1
+    );
+    player1->get_sprite()->set_current_frame(0);
+    players.push_back(player1);
+
+
+    Player* player2 = new Player(
+        glm::vec2(64 * 13, 64 * 15),
+        glm::vec2(0),
+        new Sprite(
+            getCharacterSpritePath(player2Character),
+            glm::vec2(tile_size),
+            1,
+            glm::vec2(4, 3)
+        ),
+        height_map,
+        &object_map,
+        2
+    );
+    player2->get_sprite()->set_current_frame(0);
+    players.push_back(player2);
+}
+
 void GameScene::removeObjectAt(int tile_x, int tile_y) {
     float origin_x = (width - 15 * tile_size) / 2.0f;
     float origin_y = (height - 13 * tile_size) / 2.0f;

@@ -140,6 +140,12 @@
     <ClInclude Include="MainMenuScene.h">
       <Filter>Header Files\Scene Logic\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="CharacterTypesEnum.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuStatesEnum.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

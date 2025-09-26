@@ -167,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="CharacterTypesEnum.h" />
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="GameInstance.h" />
     <ClInclude Include="GameObject.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IntroScene.h" />
     <ClInclude Include="MainMenuScene.h" />
+    <ClInclude Include="MenuStatesEnum.h" />
     <ClInclude Include="ObjectsEnum.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Primitives.h" />

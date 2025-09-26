@@ -4,24 +4,14 @@
 #include "GameObject.h"
 #include "Input.h"
 #include <vector>
+#include "MenuStatesEnum.h"
+#include "CharacterTypesEnum.h"
 
-enum class MenuState {
-    MAIN_MENU,
-    PLAYER1_SELECT,
-    PLAYER2_SELECT,
-    READY_TO_START
-};
 
-enum class CharacterType {
-    WHITE = 0,
-    BLACK = 1,
-    BLUE = 2,
-    RED = 3
-};
 
 class MainMenuScene : public Scene {
 private:
-    MenuState currentState;
+    MenuState currentState = MenuState::MAIN_MENU;
     TextRenderer* titleText;
     TextRenderer* instructionText;
     TextRenderer* player1Text;

@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include <freeglut.h>
 #include <iostream>
+#include "CharacterTypesEnum.h"
 
 MainMenuScene::MainMenuScene() : Scene("MainMenu"),
 currentState(MenuState::MAIN_MENU),

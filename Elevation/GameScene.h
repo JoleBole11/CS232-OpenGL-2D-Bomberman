@@ -5,17 +5,11 @@
 #include "WallsEnum.h"
 #include "Input.h"
 #include <vector>
+#include "CharacterTypesEnum.h"
 
 // Forward declaration to avoid circular dependency
 class GameInstance;
 class MainMenuScene;
-
-enum class CharacterType {
-    WHITE = 0,
-    BLACK = 1,
-    BLUE = 2,
-    RED = 3
-};
 
 class GameScene : public Scene {
 private:
@@ -65,7 +59,7 @@ public:
     void handleKeyboard(unsigned char key, int x, int y) override;
 
     // Game-specific methods
-    void addBomb(int tile_x, int tile_y, int radius, int playerId = 1);
+    void addBomb(int tile_x, int tile_y, int radius);
     void addExplosion(int tile_x, int tile_y, int radius);
     void removeObjectAt(int tile_x, int tile_y);
     void setWallsDestroyed(bool destroyed) { walls_destroyed = destroyed; }
