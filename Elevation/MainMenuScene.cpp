@@ -28,7 +28,7 @@ MainMenuScene::~MainMenuScene() {
 void MainMenuScene::initialize() {
     // Create title text
     titleText = new TextRenderer(
-        glm::vec2(200, 700),
+        glm::vec2(140, 800),
         new Sprite("Resources/font.png", glm::vec2(64), 1, glm::vec2(15, 8), true),
         54, 32
     );
@@ -36,49 +36,69 @@ void MainMenuScene::initialize() {
 
     // Create instruction text - Updated to be clear about 2-player
     instructionText = new TextRenderer(
-        glm::vec2(100, 500),
+        glm::vec2(360, 500),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         27, 32
     );
-    instructionText->setText("2_PLAYER_MULTIPLAYER___PRESS_ENTER");
+    instructionText->setText("PRESS_ENTER");
 
     // Create player texts
     player1Text = new TextRenderer(
-        glm::vec2(100, 600),
-        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        glm::vec2(300, 600),
+        new Sprite("Resources/font.png", glm::vec2(48), 1, glm::vec2(15, 8), true),
         27, 32
     );
-    player1Text->setText("PLAYER_1__SELECT_CHARACTER___A_D_ENTER");
+    player1Text->setText("PLAYER_1");
 
     player2Text = new TextRenderer(
-        glm::vec2(100, 600),
+        glm::vec2(300, 600),
+        new Sprite("Resources/font.png", glm::vec2(48), 1, glm::vec2(15, 8), true),
+        27, 32
+    );
+    player2Text->setText("PLAYER_2");
+
+    selectCharacterText = new TextRenderer(
+        glm::vec2(260, 450),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         27, 32
     );
-    player2Text->setText("PLAYER_2__SELECT_CHARACTER___A_D_ENTER");
+    selectCharacterText->setText("SELECT_CHARACTER");
 
-    // Initialize character previews
+    menuControlsText = new TextRenderer(
+        glm::vec2(50, 600),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        27, 32
+    );
+    menuControlsText->setText("A D_ENTER");
+
+    controlsText1 = new TextRenderer(
+        glm::vec2(600, 600),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        27, 32
+    );
+	controlsText1->setText("WASD_V");
+
+    controlsText2 = new TextRenderer(
+        glm::vec2(600, 600),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        27, 32
+	);
+	controlsText2->setText("IJKL_N");
+
+
     initializeCharacterPreviews();
 
-    // Create selector (highlight box)
     selector = new GameObject(
-        glm::vec2(200, 300),
+        glm::vec2(200, 370),
         glm::vec2(0),
-        new Sprite("resources/walls.png", glm::vec2(80), 1, glm::vec2(2, 1), true)
+        new Sprite("resources/arrow.png", glm::vec2(80), 1, glm::vec2(1), true)
     );
-    selector->get_sprite()->set_current_frame(1); // Use breakable wall sprite as highlight
+    selector->get_sprite()->set_current_frame(0);
 
-    // Create player indicators
     player1Indicator = new GameObject(
         glm::vec2(0, 0),
         glm::vec2(0),
-        new Sprite("resources/powerUpUD.png", glm::vec2(32), 1, glm::vec2(1), true)
-    );
-
-    player2Indicator = new GameObject(
-        glm::vec2(0, 0),
-        glm::vec2(0),
-        new Sprite("resources/powerUpLR.png", glm::vec2(32), 1, glm::vec2(1), true)
+        new Sprite("resources/arrow.png", glm::vec2(32), 1, glm::vec2(1), true)
     );
 
     initialized = true;
@@ -91,7 +111,6 @@ void MainMenuScene::initializeCharacterPreviews() {
     const float startY = 300.0f;
     const float spacing = 150.0f;
 
-    // Create character preview objects
     for (int i = 0; i < 4; i++) {
         CharacterType charType = static_cast<CharacterType>(i);
         GameObject* preview = new GameObject(
@@ -99,7 +118,7 @@ void MainMenuScene::initializeCharacterPreviews() {
             glm::vec2(0),
             new Sprite(getCharacterSpritePath(charType), glm::vec2(64), 1, glm::vec2(4, 3), true)
         );
-        preview->get_sprite()->set_current_frame(1); // Standing frame
+        preview->get_sprite()->set_current_frame(1);
         characterPreviews.push_back(preview);
     }
 }
@@ -136,10 +155,10 @@ const char* MainMenuScene::getCharacterName(CharacterType character) {
 
 bool MainMenuScene::isCharacterAvailable(CharacterType character) {
     if (currentState == MenuState::PLAYER1_SELECT) {
-        return true; // Player 1 can select any character
+        return true;
     }
     else if (currentState == MenuState::PLAYER2_SELECT) {
-        return character != player1Character; // Player 2 can't select Player 1's character
+        return character != player1Character;
     }
     return true;
 }
@@ -155,7 +174,7 @@ void MainMenuScene::update(float deltaTime) {
     case MenuState::PLAYER2_SELECT:
         updatePlayer2Selection(deltaTime);
         break;
-    case MenuState::READY_TO_START:
+    case MenuState::START:
     {
         // Debug output
         std::cout << "Starting game with:" << std::endl;
@@ -180,138 +199,79 @@ void MainMenuScene::updateMainMenu(float deltaTime) {
 }
 
 void MainMenuScene::updatePlayer1Selection(float deltaTime) {
-    // Update selector position
     const float startX = 200.0f;
     const float spacing = 150.0f;
-    selector->set_position(glm::vec2(startX + selectedCharacterIndex * spacing - 8, 292));
+    selector->set_position(glm::vec2(startX + selectedCharacterIndex * spacing - 8, 370));
 
     handlePlayer1SelectionInput();
 }
 
 void MainMenuScene::updatePlayer2Selection(float deltaTime) {
-    // Update selector position
     const float startX = 200.0f;
     const float spacing = 150.0f;
-    selector->set_position(glm::vec2(startX + selectedCharacterIndex * spacing - 8, 292));
+    selector->set_position(glm::vec2(startX + selectedCharacterIndex * spacing - 8, 370));
 
     handlePlayer2SelectionInput();
 }
 
 void MainMenuScene::handleMainMenuInput() {
-    static bool enterPressed = false;
 
-    if (Input::getKey(13) && !enterPressed) { // Enter key
-        enterPressed = true;
+    if (Input::getKeyDown(13)) {
         currentState = MenuState::PLAYER1_SELECT;
         selectedCharacterIndex = 0;
-    }
-
-    if (!Input::getKey(13)) {
-        enterPressed = false;
     }
 }
 
 void MainMenuScene::handlePlayer1SelectionInput() {
-    static bool leftPressed = false;
-    static bool rightPressed = false;
-    static bool enterPressed = false;
 
-    // Handle left/right navigation
-    if (Input::getKey('A') || Input::getKey('a')) {
-        if (!leftPressed) {
-            selectedCharacterIndex = (selectedCharacterIndex - 1 + 4) % 4;
-            leftPressed = true;
-        }
-    }
-    else {
-        leftPressed = false;
+    if (Input::getKeyDown('A') || Input::getKeyDown('a')) {
+        selectedCharacterIndex = (selectedCharacterIndex - 1 + 4) % 4;
     }
 
-    if (Input::getKey('D') || Input::getKey('d')) {
-        if (!rightPressed) {
-            selectedCharacterIndex = (selectedCharacterIndex + 1) % 4;
-            rightPressed = true;
-        }
-    }
-    else {
-        rightPressed = false;
+    if (Input::getKeyDown('D') || Input::getKeyDown('d')) {
+        selectedCharacterIndex = (selectedCharacterIndex + 1) % 4;
     }
 
-    // Handle selection
-    if (Input::getKey(13) && !enterPressed) { // Enter key
+    if (Input::getKeyDown(13)) {
         player1Character = static_cast<CharacterType>(selectedCharacterIndex);
         player1Selected = true;
 
-        // Set player 1 indicator position
         const float startX = 200.0f;
         const float spacing = 150.0f;
         player1Indicator->set_position(glm::vec2(startX + selectedCharacterIndex * spacing + 32, 340));
 
-        // Move to player 2 selection
         currentState = MenuState::PLAYER2_SELECT;
 
-        // Find first available character for player 2
         selectedCharacterIndex = 0;
         while (!isCharacterAvailable(static_cast<CharacterType>(selectedCharacterIndex)) && selectedCharacterIndex < 4) {
             selectedCharacterIndex++;
         }
-
-        enterPressed = true;
-    }
-
-    if (!Input::getKey(13)) {
-        enterPressed = false;
     }
 }
 
 void MainMenuScene::handlePlayer2SelectionInput() {
-    static bool leftPressed = false;
-    static bool rightPressed = false;
-    static bool enterPressed = false;
 
-    // Handle left/right navigation
-    if (Input::getKey('A') || Input::getKey('a')) {
-        if (!leftPressed) {
-            do {
-                selectedCharacterIndex = (selectedCharacterIndex - 1 + 4) % 4;
-            } while (!isCharacterAvailable(static_cast<CharacterType>(selectedCharacterIndex)));
-            leftPressed = true;
-        }
-    }
-    else {
-        leftPressed = false;
+    if (Input::getKeyDown('A') || Input::getKeyDown('a')) {
+        do {
+            selectedCharacterIndex = (selectedCharacterIndex - 1 + 4) % 4;
+        } while (!isCharacterAvailable(static_cast<CharacterType>(selectedCharacterIndex)));
     }
 
-    if (Input::getKey('D') || Input::getKey('d')) {
-        if (!rightPressed) {
-            do {
-                selectedCharacterIndex = (selectedCharacterIndex + 1) % 4;
-            } while (!isCharacterAvailable(static_cast<CharacterType>(selectedCharacterIndex)));
-            rightPressed = true;
-        }
-    }
-    else {
-        rightPressed = false;
+    if (Input::getKeyDown('D') || Input::getKeyDown('d')) {
+        do {
+            selectedCharacterIndex = (selectedCharacterIndex + 1) % 4;
+        } while (!isCharacterAvailable(static_cast<CharacterType>(selectedCharacterIndex)));
     }
 
-    // Handle selection
-    if (Input::getKey(13) && !enterPressed) { // Enter key
+    if (Input::getKeyDown(13)) { 
         player2Character = static_cast<CharacterType>(selectedCharacterIndex);
         player2Selected = true;
 
-        // Set player 2 indicator position
         const float startX = 200.0f;
         const float spacing = 150.0f;
         player2Indicator->set_position(glm::vec2(startX + selectedCharacterIndex * spacing + 32, 260));
 
-        // Ready to start game
-        currentState = MenuState::READY_TO_START;
-
-        enterPressed = true;
-    }
-
-    if (!Input::getKey(13)) {
-        enterPressed = false;
+        currentState = MenuState::START;
     }
 }
 
@@ -328,53 +288,48 @@ void MainMenuScene::render() {
     case MenuState::PLAYER2_SELECT:
         renderPlayer2Selection();
         break;
-    case MenuState::READY_TO_START:
-        renderPlayer2Selection(); // Show final selection
+    case MenuState::START:
+        renderPlayer2Selection();
         break;
     }
 }
 
 void MainMenuScene::renderMainMenu() {
-    if (titleText) {
+    if (titleText)
         titleText->render();
-    }
-    if (instructionText) {
-        instructionText->render();
-    }
 
-    // Add some visual indication that this is multiplayer only
-    TextRenderer multiplayerNote(
-        glm::vec2(150, 400),
-        new Sprite("Resources/font.png", glm::vec2(24), 1, glm::vec2(15, 8), true),
-        20, 32
-    );
-    multiplayerNote.setText("TWO_PLAYERS_REQUIRED");
-    multiplayerNote.render();
+    if (instructionText)
+        instructionText->render();
 }
 
 void MainMenuScene::renderPlayer1Selection() {
-    if (titleText) {
+    if (titleText)
         titleText->render();
-    }
-    if (player1Text) {
-        player1Text->render();
-    }
 
-    // Render character previews
+    if (player1Text)
+        player1Text->render();
+
+    if (selectCharacterText)
+        selectCharacterText->render();
+
+    if (controlsText1)
+        controlsText1->render();
+
+	if (menuControlsText)
+		menuControlsText->render();
+
     for (auto& preview : characterPreviews) {
         if (preview) {
             preview->render();
         }
     }
 
-    // Render selector
     if (selector) {
         selector->render();
     }
 
-    // Render character names
     TextRenderer nameRenderer(
-        glm::vec2(100, 200),
+        glm::vec2(100, 220),
         new Sprite("Resources/font.png", glm::vec2(24), 1, glm::vec2(15, 8), true),
         20, 32
     );
@@ -383,31 +338,30 @@ void MainMenuScene::renderPlayer1Selection() {
         const float startX = 180.0f;
         const float spacing = 150.0f;
         nameRenderer = TextRenderer(
-            glm::vec2(startX + i * spacing, 200),
+            glm::vec2(startX + i * spacing, 220),
             new Sprite("Resources/font.png", glm::vec2(24), 1, glm::vec2(15, 8), true),
             20, 32
         );
         nameRenderer.setText(getCharacterName(static_cast<CharacterType>(i)));
         nameRenderer.render();
     }
-
-    // Add instruction text for player 1
-    TextRenderer instructionRenderer(
-        glm::vec2(150, 150),
-        new Sprite("Resources/font.png", glm::vec2(20), 1, glm::vec2(15, 8), true),
-        18, 32
-    );
-    instructionRenderer.setText("USE_A_D_TO_NAVIGATE__ENTER_TO_SELECT");
-    instructionRenderer.render();
 }
 
 void MainMenuScene::renderPlayer2Selection() {
-    if (titleText) {
+    if (titleText)
         titleText->render();
-    }
-    if (player2Text) {
+
+    if (player2Text)
         player2Text->render();
-    }
+
+    if (selectCharacterText)
+        selectCharacterText->render();
+
+    if (controlsText2)
+		controlsText2->render();
+
+    if (menuControlsText)
+		menuControlsText->render();
 
     // Render character previews
     for (int i = 0; i < characterPreviews.size(); i++) {
@@ -439,7 +393,7 @@ void MainMenuScene::renderPlayer2Selection() {
 
     // Render character names
     TextRenderer nameRenderer(
-        glm::vec2(100, 200),
+        glm::vec2(100, 220),
         new Sprite("Resources/font.png", glm::vec2(24), 1, glm::vec2(15, 8), true),
         20, 32
     );
@@ -448,32 +402,12 @@ void MainMenuScene::renderPlayer2Selection() {
         const float startX = 180.0f;
         const float spacing = 150.0f;
         nameRenderer = TextRenderer(
-            glm::vec2(startX + i * spacing, 200),
+            glm::vec2(startX + i * spacing, 220),
             new Sprite("Resources/font.png", glm::vec2(24), 1, glm::vec2(15, 8), true),
             20, 32
         );
         nameRenderer.setText(getCharacterName(static_cast<CharacterType>(i)));
         nameRenderer.render();
-    }
-
-    // Add instruction text
-    if (currentState == MenuState::PLAYER2_SELECT) {
-        TextRenderer instructionRenderer(
-            glm::vec2(150, 150),
-            new Sprite("Resources/font.png", glm::vec2(20), 1, glm::vec2(15, 8), true),
-            18, 32
-        );
-        instructionRenderer.setText("USE_A_D_TO_NAVIGATE__ENTER_TO_SELECT");
-        instructionRenderer.render();
-    }
-    else if (currentState == MenuState::READY_TO_START) {
-        TextRenderer readyRenderer(
-            glm::vec2(200, 150),
-            new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
-            24, 32
-        );
-        readyRenderer.setText("STARTING_GAME");
-        readyRenderer.render();
     }
 }
 
@@ -506,7 +440,6 @@ void MainMenuScene::cleanup() {
 }
 
 void MainMenuScene::onEnter() {
-    // Reset state when entering menu
     currentState = MenuState::MAIN_MENU;
     selectedCharacterIndex = 0;
     player1Selected = false;

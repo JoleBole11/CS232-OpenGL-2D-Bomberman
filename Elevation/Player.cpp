@@ -1,15 +1,15 @@
 #include "Player.h"
 #include "GameInstance.h"
-#include "GameScene.h"  // Add this include
+#include "GameScene.h"
 #include "Bomb.h"
 
 Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* _object_map, int playerId) :
-    GameObject(pos, velocity, sprite)
+    GameObject(pos, velocity, sprite), frame_timer(0.0f), current_anim_frame(0)  // Initialize animation variables
 {
     height_map = _height_map;
     object_map = _object_map;
     bomb_cooldown = 0.0f;
-	player_id = playerId;
+    player_id = playerId;
 }
 
 Player::~Player()
@@ -21,6 +21,7 @@ void Player::update(float dt)
     if (dead) {
         set_is_active(false);
         set_is_visible(false);
+        return;
     }
 
     glm::vec2 center = get_position() + glm::vec2(32, 32);
@@ -49,7 +50,7 @@ void Player::update(float dt)
 
     set_velocity(glm::vec2(0, 0));
     Sprite* sprite = this->get_sprite();
-    int current_frame = 0;
+    int current_direction_frame = 0;
     glm::vec2 flip = sprite->get_sprite_flip();
     bool moving = false;
 
@@ -61,28 +62,28 @@ void Player::update(float dt)
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
-            current_frame = 4;
+            current_direction_frame = 4;  // Up animation frames start at 4
         }
-        if (Input::getKey('S')) {
+        else if (Input::getKey('S')) {
             set_velocity(glm::vec2(0, -speed));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
-            current_frame = 0;
+            current_direction_frame = 0;  // Down animation frames start at 0
         }
-        if (Input::getKey('A')) {
+        else if (Input::getKey('A')) {
             set_velocity(glm::vec2(-speed, 0));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
-            current_frame = 8;
+            current_direction_frame = 8;  // Left animation frames start at 8
         }
-        if (Input::getKey('D')) {
+        else if (Input::getKey('D')) {
             set_velocity(glm::vec2(speed, 0));
             moving = true;
             flip.x = true;
             sprite->set_sprite_flip(flip);
-            current_frame = 8;
+            current_direction_frame = 8;  // Right animation frames start at 8
         }
 
         if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
@@ -94,39 +95,37 @@ void Player::update(float dt)
         }
     }
     else if (player_id == 2) {
-        // Player 2 controls: Arrow keys + Space
-        // Note: You might need to handle special keys differently in your Input class
-        // For now, using IJKL as alternative arrow keys
+        // Player 2 controls: IJKL + N
         if (Input::getKey('I')) { // Up
             set_velocity(glm::vec2(0, speed));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
-            current_frame = 4;
+            current_direction_frame = 4;
         }
-        if (Input::getKey('K')) { // Down
+        else if (Input::getKey('K')) { // Down
             set_velocity(glm::vec2(0, -speed));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
-            current_frame = 0;
+            current_direction_frame = 0;
         }
-        if (Input::getKey('J')) { // Left
+        else if (Input::getKey('J')) { // Left
             set_velocity(glm::vec2(-speed, 0));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
-            current_frame = 8;
+            current_direction_frame = 8;
         }
-        if (Input::getKey('L')) { // Right
+        else if (Input::getKey('L')) { // Right
             set_velocity(glm::vec2(speed, 0));
             moving = true;
             flip.x = true;
             sprite->set_sprite_flip(flip);
-            current_frame = 8;
+            current_direction_frame = 8;
         }
 
-        if (Input::getKeyDown('N') && bomb_cooldown <= 0.0f) { // N for bomb
+        if (Input::getKeyDown('N') && bomb_cooldown <= 0.0f) {
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
                 gameScene->addBomb(tile_x, tile_y, bomb_radius);
@@ -135,13 +134,14 @@ void Player::update(float dt)
         }
     }
 
+    // Handle object interactions
     if (tile_y >= 0 && tile_y < object_map->size() &&
         tile_x >= 0 && tile_x < (*object_map)[tile_y].size()) {
+
         if ((*object_map)[tile_y][tile_x] == Object::KILL_OBJECT)
             dead = true;
 
-        if ((*object_map)[tile_y][tile_x] == Object::PICKUP_SPEED)
-        {
+        if ((*object_map)[tile_y][tile_x] == Object::PICKUP_SPEED) {
             set_speed(speed + 50);
             (*object_map)[tile_y][tile_x] = 0;
 
@@ -154,8 +154,7 @@ void Player::update(float dt)
             set_speed_timer(5.0f);
             speed_powered = true;
         }
-        if ((*object_map)[tile_y][tile_x] == Object::PICKUP_RADIUS)
-        {
+        if ((*object_map)[tile_y][tile_x] == Object::PICKUP_RADIUS) {
             set_bomb_radius(bomb_radius + 2);
             (*object_map)[tile_y][tile_x] = 0;
 
@@ -169,22 +168,27 @@ void Player::update(float dt)
         }
     }
 
-    static float frame_timer = 0.0f;
-    int anim_frame = 1;
-    const int frame_count = 4;
+    // Handle animation
+    const float ANIMATION_SPEED = 0.15f;  // Time between frames
+    const int FRAMES_PER_DIRECTION = 4;   // Number of animation frames per direction
+
     if (moving) {
         frame_timer += dt;
-        if (frame_timer >= 0.2f) {
-            anim_frame = anim_frame + 1;
-            sprite->set_current_frame(current_frame + anim_frame);
+        if (frame_timer >= ANIMATION_SPEED) {
+            current_anim_frame = (current_anim_frame + 1) % FRAMES_PER_DIRECTION;
             frame_timer = 0.0f;
         }
+        // Set the actual sprite frame: base direction frame + animation offset
+        sprite->set_current_frame(current_direction_frame + current_anim_frame);
     }
     else {
-        anim_frame = 0;
-        sprite->set_current_frame(1);
+        // When not moving, show standing frame (frame 1 in each direction)
+        current_anim_frame = 0;
+        frame_timer = 0.0f;
+        sprite->set_current_frame(1);  // Standing frame
     }
 
+    // Handle movement with collision detection
     glm::vec2 current_pos = get_position();
     glm::vec2 x_movement = glm::vec2(get_velocity().x * dt, 0);
     glm::vec2 new_x_position = current_pos + x_movement;

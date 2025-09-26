@@ -18,6 +18,10 @@ private:
     TextRenderer* instructionText;
     TextRenderer* player1Text;
     TextRenderer* player2Text;
+	TextRenderer* selectCharacterText;
+	TextRenderer* menuControlsText;
+	TextRenderer* controlsText1;
+    TextRenderer* controlsText2;
 
     // Character selection
     std::vector<GameObject*> characterPreviews;

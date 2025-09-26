@@ -28,6 +28,9 @@ private:
     bool radius_powered = false;
     bool speed_powered = false;
 
+    float frame_timer = 0.0f;
+    int current_anim_frame = 0;
+
     bool can_move_to_position(const glm::vec2& position);
 
 public:
