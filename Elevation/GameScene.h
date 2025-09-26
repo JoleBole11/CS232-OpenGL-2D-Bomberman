@@ -7,10 +7,12 @@
 #include <vector>
 #include "CharacterTypesEnum.h"
 #include "MainMenuScene.h"
+#include "GameInstance.h"
 
-// Forward declaration to avoid circular dependency
+// Forward declarations to avoid circular dependency
 class GameInstance;
 class MainMenuScene;
+class Player;
 
 class GameScene : public Scene {
 private:

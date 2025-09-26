@@ -484,6 +484,33 @@ void GameScene::addExplosion(int tile_x, int tile_y, int radius) {
     std::cout << "Explosion object created and added to objects vector" << std::endl;
 }
 
+void GameScene::removeObjectAt(int tile_x, int tile_y)
+{
+    // Bounds check for safety
+    if (tile_x < 0 || tile_x >= object_map[0].size() || tile_y < 0 || tile_y >= object_map.size())
+        return;
+
+    // Remove object from object_map
+    object_map[tile_y][tile_x] = 0;
+
+    // Remove corresponding GameObject from objects vector if present
+    auto it = objects.begin();
+    while (it != objects.end()) {
+        glm::vec2 obj_pos = (*it)->get_position();
+        float origin_x = (width - object_map[0].size() * tile_size) / 2.0f;
+        float origin_y = (height - object_map.size() * tile_size) / 2.0f;
+        int obj_x = static_cast<int>((obj_pos.x - origin_x) / tile_size);
+        int obj_y = static_cast<int>((obj_pos.y - origin_y) / tile_size);
+
+        if (obj_x == tile_x && obj_y == tile_y) {
+            delete *it;
+            it = objects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
 void GameScene::rebuildTiles() {
     // Clear existing tiles
     for (auto& t : tiles) delete t;

@@ -170,12 +170,12 @@ void Player::update(float dt)
     }
 
     static float frame_timer = 0.0f;
-    static int anim_frame = 0;
+    int anim_frame = 1;
     const int frame_count = 4;
     if (moving) {
         frame_timer += dt;
         if (frame_timer >= 0.2f) {
-            anim_frame = (anim_frame + 1) % frame_count;
+            anim_frame = anim_frame + 1;
             sprite->set_current_frame(current_frame + anim_frame);
             frame_timer = 0.0f;
         }

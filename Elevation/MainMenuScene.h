@@ -6,6 +6,8 @@
 #include <vector>
 #include "MenuStatesEnum.h"
 #include "CharacterTypesEnum.h"
+#include "GameInstance.h"
+#include "GameScene.h"
 
 
 

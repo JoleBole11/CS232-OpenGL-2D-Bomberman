@@ -1,6 +1,10 @@
 #pragma once
 #include "GameObject.h"
 #include "Input.h"
+#include "MainMenuScene.h"
+#include "GameInstance.h"
+#include <vector>
+#include "GameScene.h"
 
 // Forward declaration
 class GameScene;
