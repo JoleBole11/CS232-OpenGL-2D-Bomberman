@@ -6,6 +6,7 @@
 #include "Input.h"
 #include <vector>
 #include "CharacterTypesEnum.h"
+#include "MainMenuScene.h"
 
 // Forward declaration to avoid circular dependency
 class GameInstance;

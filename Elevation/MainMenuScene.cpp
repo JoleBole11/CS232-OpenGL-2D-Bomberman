@@ -34,13 +34,13 @@ void MainMenuScene::initialize() {
     );
     titleText->setText("BOMBERMAN");
 
-    // Create instruction text
+    // Create instruction text - Updated to be clear about 2-player
     instructionText = new TextRenderer(
-        glm::vec2(150, 500),
+        glm::vec2(100, 500),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         27, 32
     );
-    instructionText->setText("PRESS_ENTER_TO_START");
+    instructionText->setText("2_PLAYER_MULTIPLAYER___PRESS_ENTER");
 
     // Create player texts
     player1Text = new TextRenderer(
@@ -48,14 +48,14 @@ void MainMenuScene::initialize() {
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         27, 32
     );
-    player1Text->setText("PLAYER_1__SELECT_CHARACTER");
+    player1Text->setText("PLAYER_1__SELECT_CHARACTER___A_D_ENTER");
 
     player2Text = new TextRenderer(
         glm::vec2(100, 600),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         27, 32
     );
-    player2Text->setText("PLAYER_2__SELECT_CHARACTER");
+    player2Text->setText("PLAYER_2__SELECT_CHARACTER___A_D_ENTER");
 
     // Initialize character previews
     initializeCharacterPreviews();
@@ -156,8 +156,12 @@ void MainMenuScene::update(float deltaTime) {
         updatePlayer2Selection(deltaTime);
         break;
     case MenuState::READY_TO_START:
-        // Auto-transition to game
-        SceneManager::getInstance()->changeScene("Game");
+        // Pass the selected characters to GameScene before transitioning
+        SceneManager* sceneManager = SceneManager::getInstance();
+        // Get the GameScene and set the characters
+        // Note: You might need to add a method to get a specific scene from SceneManager
+        // For now, we'll transition directly
+        sceneManager->changeScene("Game");
         break;
     }
 }
@@ -328,6 +332,15 @@ void MainMenuScene::renderMainMenu() {
     if (instructionText) {
         instructionText->render();
     }
+
+    // Add some visual indication that this is multiplayer only
+    TextRenderer multiplayerNote(
+        glm::vec2(150, 400),
+        new Sprite("Resources/font.png", glm::vec2(24), 1, glm::vec2(15, 8), true),
+        20, 32
+    );
+    multiplayerNote.setText("TWO_PLAYERS_REQUIRED");
+    multiplayerNote.render();
 }
 
 void MainMenuScene::renderPlayer1Selection() {
@@ -368,6 +381,15 @@ void MainMenuScene::renderPlayer1Selection() {
         nameRenderer.setText(getCharacterName(static_cast<CharacterType>(i)));
         nameRenderer.render();
     }
+
+    // Add instruction text for player 1
+    TextRenderer instructionRenderer(
+        glm::vec2(150, 150),
+        new Sprite("Resources/font.png", glm::vec2(20), 1, glm::vec2(15, 8), true),
+        18, 32
+    );
+    instructionRenderer.setText("USE_A_D_TO_NAVIGATE__ENTER_TO_SELECT");
+    instructionRenderer.render();
 }
 
 void MainMenuScene::renderPlayer2Selection() {
@@ -423,6 +445,26 @@ void MainMenuScene::renderPlayer2Selection() {
         );
         nameRenderer.setText(getCharacterName(static_cast<CharacterType>(i)));
         nameRenderer.render();
+    }
+
+    // Add instruction text
+    if (currentState == MenuState::PLAYER2_SELECT) {
+        TextRenderer instructionRenderer(
+            glm::vec2(150, 150),
+            new Sprite("Resources/font.png", glm::vec2(20), 1, glm::vec2(15, 8), true),
+            18, 32
+        );
+        instructionRenderer.setText("USE_A_D_TO_NAVIGATE__ENTER_TO_SELECT");
+        instructionRenderer.render();
+    }
+    else if (currentState == MenuState::READY_TO_START) {
+        TextRenderer readyRenderer(
+            glm::vec2(200, 150),
+            new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+            24, 32
+        );
+        readyRenderer.setText("STARTING_GAME");
+        readyRenderer.render();
     }
 }
 

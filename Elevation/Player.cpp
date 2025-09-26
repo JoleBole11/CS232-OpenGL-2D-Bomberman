@@ -53,73 +53,120 @@ void Player::update(float dt)
     glm::vec2 flip = sprite->get_sprite_flip();
     bool moving = false;
 
-    if (Input::getKey('W')) {
-        set_velocity(glm::vec2(0, speed));
-        moving = true;
-        flip.x = false;
-        sprite->set_sprite_flip(flip);
-        current_frame = 4;
-    }
-    if (Input::getKey('S')) {
-        set_velocity(glm::vec2(0, -speed));
-        moving = true;
-        flip.x = false;
-        sprite->set_sprite_flip(flip);
-        current_frame = 0;
-    }
-    if (Input::getKey('A')) {
-        set_velocity(glm::vec2(-speed, 0));
-        moving = true;
-        flip.x = false;
-        sprite->set_sprite_flip(flip);
-        current_frame = 8;
-    }
-    if (Input::getKey('D')) {
-        set_velocity(glm::vec2(speed, 0));
-        moving = true;
-        flip.x = true;
-        sprite->set_sprite_flip(flip);
-        current_frame = 8;
-    }
-
-    if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
-        // Use GameInstance instead of Game::game_instance
-        GameScene* gameScene = GameInstance::getCurrentGameScene();
-        if (gameScene) {
-            gameScene->addBomb(tile_x, tile_y, bomb_radius);
+    // Handle different controls based on player ID
+    if (player_id == 1) {
+        // Player 1 controls: WASD + V
+        if (Input::getKey('W')) {
+            set_velocity(glm::vec2(0, speed));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_frame = 4;
         }
-        bomb_cooldown = 3.0f;
-    }
-
-    if ((*object_map)[tile_y][tile_x] == Object::KILL_OBJECT)
-        dead = true;
-
-    if ((*object_map)[tile_y][tile_x] == Object::PICKUP_SPEED)
-    {
-        set_speed(speed + 50);
-        (*object_map)[tile_y][tile_x] = 0;
-
-        GameScene* gameScene = GameInstance::getCurrentGameScene();
-        if (gameScene) {
-            gameScene->removeObjectAt(tile_x, tile_y);
-            gameScene->setWallsDestroyed(true);
+        if (Input::getKey('S')) {
+            set_velocity(glm::vec2(0, -speed));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_frame = 0;
+        }
+        if (Input::getKey('A')) {
+            set_velocity(glm::vec2(-speed, 0));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_frame = 8;
+        }
+        if (Input::getKey('D')) {
+            set_velocity(glm::vec2(speed, 0));
+            moving = true;
+            flip.x = true;
+            sprite->set_sprite_flip(flip);
+            current_frame = 8;
         }
 
-        set_speed_timer(5.0f);
-        speed_powered = true;
+        if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
+            GameScene* gameScene = GameInstance::getCurrentGameScene();
+            if (gameScene) {
+                gameScene->addBomb(tile_x, tile_y, bomb_radius);
+            }
+            bomb_cooldown = 3.0f;
+        }
     }
-    if ((*object_map)[tile_y][tile_x] == Object::PICKUP_RADIUS)
-    {
-        set_bomb_radius(bomb_radius + 2);
-        (*object_map)[tile_y][tile_x] = 0;
-
-        GameScene* gameScene = GameInstance::getCurrentGameScene();
-        if (gameScene) {
-            gameScene->removeObjectAt(tile_x, tile_y);
+    else if (player_id == 2) {
+        // Player 2 controls: Arrow keys + Space
+        // Note: You might need to handle special keys differently in your Input class
+        // For now, using IJKL as alternative arrow keys
+        if (Input::getKey('I')) { // Up
+            set_velocity(glm::vec2(0, speed));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_frame = 4;
+        }
+        if (Input::getKey('K')) { // Down
+            set_velocity(glm::vec2(0, -speed));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_frame = 0;
+        }
+        if (Input::getKey('J')) { // Left
+            set_velocity(glm::vec2(-speed, 0));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_frame = 8;
+        }
+        if (Input::getKey('L')) { // Right
+            set_velocity(glm::vec2(speed, 0));
+            moving = true;
+            flip.x = true;
+            sprite->set_sprite_flip(flip);
+            current_frame = 8;
         }
 
-        set_radius_timer(5.0f);
-        radius_powered = true;
+        if (Input::getKeyDown('N') && bomb_cooldown <= 0.0f) { // N for bomb
+            GameScene* gameScene = GameInstance::getCurrentGameScene();
+            if (gameScene) {
+                gameScene->addBomb(tile_x, tile_y, bomb_radius);
+            }
+            bomb_cooldown = 3.0f;
+        }
+    }
+
+    if (tile_y >= 0 && tile_y < object_map->size() &&
+        tile_x >= 0 && tile_x < (*object_map)[tile_y].size()) {
+        if ((*object_map)[tile_y][tile_x] == Object::KILL_OBJECT)
+            dead = true;
+
+        if ((*object_map)[tile_y][tile_x] == Object::PICKUP_SPEED)
+        {
+            set_speed(speed + 50);
+            (*object_map)[tile_y][tile_x] = 0;
+
+            GameScene* gameScene = GameInstance::getCurrentGameScene();
+            if (gameScene) {
+                gameScene->removeObjectAt(tile_x, tile_y);
+                gameScene->setWallsDestroyed(true);
+            }
+
+            set_speed_timer(5.0f);
+            speed_powered = true;
+        }
+        if ((*object_map)[tile_y][tile_x] == Object::PICKUP_RADIUS)
+        {
+            set_bomb_radius(bomb_radius + 2);
+            (*object_map)[tile_y][tile_x] = 0;
+
+            GameScene* gameScene = GameInstance::getCurrentGameScene();
+            if (gameScene) {
+                gameScene->removeObjectAt(tile_x, tile_y);
+            }
+
+            set_radius_timer(5.0f);
+            radius_powered = true;
+        }
     }
 
     static float frame_timer = 0.0f;

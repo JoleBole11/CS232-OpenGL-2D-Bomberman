@@ -60,6 +60,15 @@ void SceneManager::handleInput() {
     // Input is handled through callbacks
 }
 
+Scene* SceneManager::getScene(const std::string& name) const
+{
+    auto it = scenes.find(name);
+    if (it != scenes.end()) {
+        return it->second.get();
+    }
+    return nullptr;
+}
+
 // OpenGL callback functions
 void SceneManager::display() {
     static int lastTime = glutGet(GLUT_ELAPSED_TIME);

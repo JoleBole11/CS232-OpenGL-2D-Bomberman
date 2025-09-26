@@ -12,6 +12,7 @@
 GameScene::GameScene() : Scene("Game"), height_map(nullptr), walls_destroyed(false) {
 }
 
+
 GameScene::~GameScene() {
     cleanup();
 }
@@ -119,13 +120,30 @@ bool GameScene::loadTextures() {
         glm::vec2(64, 64),
         glm::vec2(0),
         new Sprite(
-            "resources/charWhite.png",
+            getCharacterSpritePath(player1Character),
             glm::vec2(tile_size),
             1,
             glm::vec2(4, 3)
         ),
         height_map,
-        &object_map
+        &object_map,
+        1
+    );
+    player1->get_sprite()->set_current_frame(0);
+    players.push_back(player1);
+
+    Player* player2 = new Player(
+        glm::vec2(64 * 13, 64 * 15),
+        glm::vec2(0),
+        new Sprite(
+            getCharacterSpritePath(player2Character),
+            glm::vec2(tile_size),
+            1,
+            glm::vec2(4, 3)
+        ),
+        height_map,
+        &object_map,
+        2
     );
     player1->get_sprite()->set_current_frame(0);
     players.push_back(player1);
@@ -348,6 +366,21 @@ void GameScene::handleKeyboard(unsigned char key, int x, int y) {
 void GameScene::onEnter() {
     // Register this scene with GameInstance when entering
     GameInstance::getInstance()->setCurrentGameScene(this);
+
+    // Get character selections from MainMenuScene if available
+    SceneManager* sceneManager = SceneManager::getInstance();
+    MainMenuScene* mainMenu = dynamic_cast<MainMenuScene*>(sceneManager->getScene("MainMenu"));
+
+    if (mainMenu) {
+        CharacterType p1Char = mainMenu->getPlayer1Character();
+        CharacterType p2Char = mainMenu->getPlayer2Character();
+
+        // Set the character selections
+        setPlayerCharacters(p1Char, p2Char);
+
+        // Initialize players with selected characters
+        initializePlayersWithCharacters();
+    }
 }
 
 void GameScene::onExit() {
