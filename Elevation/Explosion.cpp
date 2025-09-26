@@ -1,5 +1,7 @@
 #include "Explosion.h"
 #include "GameScene.h"
+#include "GameInstance.h"  // Add this include
+#include <iostream>        // Add this include
 
 bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int frame_edge, int frame_normal)
 {
@@ -37,6 +39,7 @@ bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int f
 
         return true;
     }
+    return false; // Add missing return statement
 }
 
 Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, int rad,
@@ -90,10 +93,10 @@ void Explosion::update(float dt)
         for (int i = 1; i <= radius; ++i) {
             int world_y_up = center_y + i;
 
-			if (world_y_up < rows && world_y_up >= 0) { // Bounds check
+            if (world_y_up < rows && world_y_up >= 0) { // Bounds check
                 int height_map_index = center_x + world_y_up * cols;
 
-				if (wall_type_check(height_map_index, world_y_up, center_x, i, 6, 2)) break;
+                if (wall_type_check(height_map_index, world_y_up, center_x, i, 6, 2)) break;
             }
         }
 
@@ -101,30 +104,30 @@ void Explosion::update(float dt)
         for (int i = 1; i <= radius; ++i) {
             int world_y_down = center_y - i;
 
-			if (world_y_down >= 0 && world_y_down < rows) { // Bounds check
+            if (world_y_down >= 0 && world_y_down < rows) { // Bounds check
                 int height_map_index = center_x + world_y_down * cols;
 
-				if (wall_type_check(height_map_index, world_y_down, center_x, i, 5, 2)) break;
+                if (wall_type_check(height_map_index, world_y_down, center_x, i, 5, 2)) break;
             }
         }
 
         // Horizontal Left
         for (int i = 1; i <= radius; ++i) {
             int x_left = center_x - i;
-			if (x_left >= 0) { // Bounds check
+            if (x_left >= 0) { // Bounds check
                 int height_map_index = x_left + center_y * cols;
 
-				if (wall_type_check(height_map_index, center_y, x_left, i, 3, 1)) break;
+                if (wall_type_check(height_map_index, center_y, x_left, i, 3, 1)) break;
             }
         }
 
-		// Horizontal Right
+        // Horizontal Right
         for (int i = 1; i <= radius; ++i) {
             int x_right = center_x + i;
-			if (x_right < cols) { // Bounds check
+            if (x_right < cols) { // Bounds check
                 int height_map_index = x_right + center_y * cols;
 
-				if (wall_type_check(height_map_index, center_y, x_right, i, 4, 1)) break;
+                if (wall_type_check(height_map_index, center_y, x_right, i, 4, 1)) break;
             }
         }
 

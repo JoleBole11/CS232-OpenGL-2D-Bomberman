@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "GameInstance.h"  // Add this include
 #include <vector>
 
 // Forward declaration

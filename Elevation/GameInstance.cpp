@@ -12,7 +12,7 @@ GameInstance* GameInstance::getInstance() {
 
 GameScene* GameInstance::getCurrentGameScene()
 {
-    return currentGameScene;
+    return getInstance()->currentGameScene;
 }
 
 void GameInstance::setCurrentGameScene(GameScene* scene) {

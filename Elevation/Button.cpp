@@ -1,4 +1,5 @@
 #include "Button.h"
+#include <GL/gl.h>  // Add this include
 
 Button::Button(glm::vec2 position, glm::vec2 scale, Sprite* background) {
 	set_position(position);
@@ -46,7 +47,7 @@ void Button::update(float deltaTime) {
 }
 
 void Button::render() {
-	if (get_is_active()) {
+	if (!get_is_active()) {  // Fix: Should be NOT active to return early
 		return;
 	}
 	glPushMatrix();
@@ -70,5 +71,7 @@ void Button::render() {
 
 	glPopMatrix();
 
-	_textRenderer->render();
+	if (_textRenderer) {  // Add null check
+		_textRenderer->render();
+	}
 }
