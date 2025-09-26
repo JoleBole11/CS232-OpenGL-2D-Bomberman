@@ -156,13 +156,22 @@ void MainMenuScene::update(float deltaTime) {
         updatePlayer2Selection(deltaTime);
         break;
     case MenuState::READY_TO_START:
-        // Pass the selected characters to GameScene before transitioning
+    {
+        // Debug output
+        std::cout << "Starting game with:" << std::endl;
+        std::cout << "  Player 1: " << getCharacterName(player1Character)
+            << " (" << static_cast<int>(player1Character) << ")" << std::endl;
+        std::cout << "  Player 2: " << getCharacterName(player2Character)
+            << " (" << static_cast<int>(player2Character) << ")" << std::endl;
+
+        // Transition to game scene
         SceneManager* sceneManager = SceneManager::getInstance();
-        // Get the GameScene and set the characters
-        // Note: You might need to add a method to get a specific scene from SceneManager
-        // For now, we'll transition directly
         sceneManager->changeScene("Game");
-        break;
+
+        // Reset state so we don't keep trying to change scenes
+        currentState = MenuState::MAIN_MENU;
+    }
+    break;
     }
 }
 

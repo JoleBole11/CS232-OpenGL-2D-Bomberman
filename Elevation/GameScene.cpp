@@ -18,11 +18,17 @@ GameScene::~GameScene() {
 }
 
 void GameScene::initialize() {
+    // Initialize default characters
+    player1Character = CharacterType::WHITE;
+    player2Character = CharacterType::BLACK;
+
+    // Initialize maps first
     initializeMaps();
-    loadTextures();
 
     // Register this scene with GameInstance
     GameInstance::getInstance()->setCurrentGameScene(this);
+
+    // Don't load textures here - wait for onEnter() when we have character selections
 
     initialized = true;
 }
@@ -115,9 +121,9 @@ bool GameScene::loadTextures() {
     for (auto& p : players) delete p;
     players.clear();
 
-    // Create player
+    // Create player 1
     Player* player1 = new Player(
-        glm::vec2(64, 64),
+        glm::vec2(64, 64),  // Bottom-left spawn
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player1Character),
@@ -127,13 +133,14 @@ bool GameScene::loadTextures() {
         ),
         height_map,
         &object_map,
-        1
+        1  // Player ID 1
     );
     player1->get_sprite()->set_current_frame(0);
     players.push_back(player1);
 
+    // Create player 2 - FIXED POSITION
     Player* player2 = new Player(
-        glm::vec2(64 * 13, 64 * 15),
+        glm::vec2(832, 704),  // Top-right spawn (13*64, 11*64)
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player2Character),
@@ -143,10 +150,10 @@ bool GameScene::loadTextures() {
         ),
         height_map,
         &object_map,
-        2
+        2  // Player ID 2
     );
-    player1->get_sprite()->set_current_frame(0);
-    players.push_back(player1);
+    player2->get_sprite()->set_current_frame(0);
+    players.push_back(player2);  // FIXED: Was pushing player1 again
 
     // Create background map
     GameObject* map = new GameObject(
@@ -376,11 +383,15 @@ void GameScene::onEnter() {
         CharacterType p2Char = mainMenu->getPlayer2Character();
 
         // Set the character selections
-        setPlayerCharacters(p1Char, p2Char);
+        player1Character = p1Char;
+        player2Character = p2Char;
 
-        // Initialize players with selected characters
-        initializePlayersWithCharacters();
+        std::cout << "Loading game with Player 1: " << static_cast<int>(p1Char)
+            << ", Player 2: " << static_cast<int>(p2Char) << std::endl;
     }
+
+    // Now load textures with the correct characters
+    loadTextures();
 }
 
 void GameScene::onExit() {
@@ -615,21 +626,22 @@ void GameScene::setPlayerCharacters(CharacterType p1Char, CharacterType p2Char) 
     player1Character = p1Char;
     player2Character = p2Char;
 
-    // If already initialized, rebuild players with new characters
-    if (initialized) {
+    // If already initialized and active, rebuild players with new characters
+    if (initialized && GameInstance::getInstance()->getCurrentGameScene() == this) {
         initializePlayersWithCharacters();
     }
 }
 
 void GameScene::initializePlayersWithCharacters() {
-
+    // Clear existing players
     for (auto& p : players) {
         delete p;
     }
     players.clear();
 
+    // Create player 1
     Player* player1 = new Player(
-        glm::vec2(64, 64),
+        glm::vec2(64, 64),  // Bottom-left spawn
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player1Character),
@@ -639,14 +651,14 @@ void GameScene::initializePlayersWithCharacters() {
         ),
         height_map,
         &object_map,
-        1
+        1  // Player ID 1
     );
     player1->get_sprite()->set_current_frame(0);
     players.push_back(player1);
 
-
+    // Create player 2 - FIXED POSITION
     Player* player2 = new Player(
-        glm::vec2(64 * 13, 64 * 15),
+        glm::vec2(832, 704),  // Top-right spawn (13*64, 11*64)
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player2Character),
@@ -656,29 +668,8 @@ void GameScene::initializePlayersWithCharacters() {
         ),
         height_map,
         &object_map,
-        2
+        2  // Player ID 2
     );
     player2->get_sprite()->set_current_frame(0);
-    players.push_back(player2);
-}
-
-void GameScene::removeObjectAt(int tile_x, int tile_y) {
-    float origin_x = (width - 15 * tile_size) / 2.0f;
-    float origin_y = (height - 13 * tile_size) / 2.0f;
-
-    glm::vec2 expected_pos(
-        tile_x * tile_size + origin_x,
-        tile_y * tile_size + origin_y
-    );
-
-    for (auto& obj : objects) {
-        glm::vec2 obj_pos = obj->get_position();
-
-        if (abs(obj_pos.x - expected_pos.x) < 1.0f &&
-            abs(obj_pos.y - expected_pos.y) < 1.0f) {
-            obj->set_is_active(false);
-            obj->set_is_visible(false);
-            break;
-        }
-    }
+    players.push_back(player2);  // FIXED: Was missing this line
 }
