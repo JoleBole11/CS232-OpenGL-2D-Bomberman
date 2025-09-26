@@ -157,6 +157,7 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IntroScene.cpp" />
+    <ClCompile Include="MainMenuScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IntroScene.h" />
+    <ClInclude Include="MainMenuScene.h" />
     <ClInclude Include="ObjectsEnum.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Primitives.h" />

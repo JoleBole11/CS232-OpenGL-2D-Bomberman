@@ -16,99 +16,129 @@
     <Filter Include="Header Files\Enums">
       <UniqueIdentifier>{492e1e20-27f2-4743-8630-606c14627f9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Player Logic">
+      <UniqueIdentifier>{00df125f-3ca0-4784-8e24-888ea4dd520a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Player Logic">
+      <UniqueIdentifier>{913dfeb2-fd85-42a0-8d21-b1aa836e1076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Primary Logic">
+      <UniqueIdentifier>{c134c16c-ea74-4fd2-ba92-cd2d3a3a1f68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Primary Logic">
+      <UniqueIdentifier>{f7378924-4235-4d6c-ac7d-c731eec99907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scene Logic">
+      <UniqueIdentifier>{011e0637-56b8-4d02-a2d8-37650389aeda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scene Logic">
+      <UniqueIdentifier>{5b8f9f78-67cc-4ca4-b4fd-98b17d7aca3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scene Logic\Scenes">
+      <UniqueIdentifier>{8d5beb04-5305-4b8a-8281-848f6a4cc355}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scene Logic\Scenes">
+      <UniqueIdentifier>{440c61de-93e1-47c5-93ce-7854ba61e9c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bomb.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Explosion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Scene Logic</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Scene Logic</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Bomb.cpp">
+      <Filter>Source Files\Player Logic</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Player Logic</Filter>
     </ClCompile>
-    <ClCompile Include="IntroScene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Explosion.cpp">
+      <Filter>Source Files\Player Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files\Primary Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>Source Files\Primary Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files\Primary Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source Files\Primary Logic</Filter>
     </ClCompile>
     <ClCompile Include="GameInstance.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Primary Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Source Files\Scene Logic\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroScene.cpp">
+      <Filter>Source Files\Scene Logic\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenuScene.cpp">
+      <Filter>Source Files\Scene Logic\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Primitives.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bomb.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Explosion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectsEnum.h">
       <Filter>Header Files\Enums</Filter>
     </ClInclude>
     <ClInclude Include="WallsEnum.h">
       <Filter>Header Files\Enums</Filter>
     </ClInclude>
-    <ClInclude Include="TextRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SceneManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Scene Logic</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Scene Logic</Filter>
     </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Bomb.h">
+      <Filter>Header Files\Player Logic</Filter>
     </ClInclude>
-    <ClInclude Include="IntroScene.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Explosion.h">
+      <Filter>Header Files\Player Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Player Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Header Files\Primary Logic</Filter>
     </ClInclude>
     <ClInclude Include="GameInstance.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>Header Files\Scene Logic\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroScene.h">
+      <Filter>Header Files\Scene Logic\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenuScene.h">
+      <Filter>Header Files\Scene Logic\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

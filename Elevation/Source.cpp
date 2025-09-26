@@ -6,6 +6,7 @@
 #include "Input.h"
 #include <memory>
 #include <iostream>
+#include "MainMenuScene.h"
 
 // Global variables for window management
 const int WINDOW_WIDTH = 960;
@@ -95,13 +96,11 @@ int main(int argc, char** argv) {
 
         // Create and add scenes
         sceneManager->addScene("Intro", std::make_unique<IntroScene>());
+        sceneManager->addScene("MainMenu", std::make_unique<MainMenuScene>());
         sceneManager->addScene("Game", std::make_unique<GameScene>());
 
         // Start with intro scene
         sceneManager->changeScene("Intro");
-
-        std::cout << "Starting Bomberman game..." << std::endl;
-        std::cout << "Controls: WASD to move, V to place bomb" << std::endl;
 
         // Start the main loop
         glutMainLoop();

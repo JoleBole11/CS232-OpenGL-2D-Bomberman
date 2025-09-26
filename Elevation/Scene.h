@@ -1,10 +1,13 @@
 #pragma once
 #include <string>
+#include <vector>
+#include "Button.h"
 
 class Scene {
 protected:
     std::string name;
     bool initialized;
+	std::vector<class Button*> buttons;
 
 public:
     Scene(const std::string& sceneName) : name(sceneName), initialized(false) {}

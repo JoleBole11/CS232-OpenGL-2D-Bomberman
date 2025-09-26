@@ -24,7 +24,7 @@ void IntroScene::update(float deltaTime) {
     timer += deltaTime;
 
     if (timer >= duration) {
-        SceneManager::getInstance()->changeScene("Game");
+        SceneManager::getInstance()->changeScene("MainMenu");
     }
 }
 
