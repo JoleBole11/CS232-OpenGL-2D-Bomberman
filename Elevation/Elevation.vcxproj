@@ -153,10 +153,13 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Intro.cpp" />
+    <ClCompile Include="IntroScene.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
   </ItemGroup>
@@ -166,12 +169,15 @@
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameScene.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="Intro.h" />
+    <ClInclude Include="IntroScene.h" />
     <ClInclude Include="ObjectsEnum.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Primitives.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="WallsEnum.h" />

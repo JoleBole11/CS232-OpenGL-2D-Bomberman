@@ -1,80 +1,51 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include <time.h>
-#include "GameObject.h"
+#include "Scene.h"
 #include "Player.h"
+#include "GameObject.h"
 #include "WallsEnum.h"
+#include <vector>
 
-class Game
-{
+class Game : public Scene {
 private:
-    // Dimensions
-    const int width;
-    const int height;
-	const int window_width = 1048;
-	const int window_height = 960;
-
-    // Map textures
-    int texture_cols = 15;
-    int texture_size = 13;
-
-    // Height change per tile
-    int height_change = 16;
-
-    // Map size
-    const int map_size_x = 15;
-    const int map_size_y = 13;
-
-    // Screen position
-    glm::vec2 screen = glm::vec2(
-        width - (15 * texture_size / 2),
-        height / 2 - (13 * texture_size / 6)
-    );
-
-    // Object textures
-    int object_texture_cols = 2;
-    int object_texture_size = 128;
+    // Game objects
+    std::vector<GameObject*> players;
+    std::vector<GameObject*> mapV;
+    std::vector<GameObject*> tiles;
+    std::vector<GameObject*> objects;
 
     // Maps
     std::vector<std::vector<int>> tile_map;
     int* height_map;
     std::vector<std::vector<int>> object_map;
 
-    //objects
-    std::vector<GameObject*> players;
-    std::vector<GameObject*> mapV;
-    std::vector<GameObject*> tiles;
-    std::vector<GameObject*> objects;
+    // Game state
+    bool walls_destroyed;
 
-    int previous_time;
-    float delta_time = 0.0f;
-    bool walls_destroyed = false;
+    // Constants
+    const int width = 960;
+    const int height = 832;
+    const float tile_size = 64.0f;
 
-    // Functions
-    bool load_textures();
-    void render();
-    void update(float delta_time);
-    void init_game();
-    void cleanup();
-    void reshape(const GLsizei width, const GLsizei height);
-    void init_glut();
-    void game_loop();
-    void callback_functions();
+    // Helper functions
+    bool loadTextures();
+    void rebuildTiles();
+    void updateObjects(float deltaTime);
+    void cleanupInactiveObjects();
 
 public:
+    Game();
+    ~Game() override;
 
-    static Game* game_instance;
+    void initialize() override;
+    void update(float deltaTime) override;
+    void render() override;
+    void cleanup() override;
 
+    void handleKeyboard(unsigned char key, int x, int y) override;
+
+    // Game-specific methods
     void addBomb(int tile_x, int tile_y, int radius);
     void addExplosion(int tile_x, int tile_y, int radius);
-    void rebuild_tiles();
-    void set_walls_destroyed(bool destroyed) { walls_destroyed = destroyed; }
     void removeObjectAt(int tile_x, int tile_y);
-
-    Game(int argc, char** argv,
-        const char* title,
-        const int WIDTH, const int HEIGHT,
-        const int POSITION_X, const int POSITION_Y, const int WINDOW_WIDTH, const int WINDOW_HEIGHT);
-    virtual ~Game();
+    void setWallsDestroyed(bool destroyed) { walls_destroyed = destroyed; }
 };

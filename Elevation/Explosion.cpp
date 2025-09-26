@@ -1,4 +1,5 @@
 #include "Explosion.h"
+#include "GameScene.h"
 
 bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int frame_edge, int frame_normal)
 {
@@ -15,7 +16,7 @@ bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int f
 
             (*object_map)[y][x] = Object::KILL_OBJECT;
             int frame = 4;
-            explosion_positions.push_back({ x, y, frame_edge }); 
+            explosion_positions.push_back({ x, y, frame_edge });
         }
         else if ((*tile_map)[12 - y][x] == Wall::RADIUS) {
             (*tile_map)[12 - y][x] = 0;
@@ -27,7 +28,13 @@ bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int f
             height_map[height_map_index] = 1;
             (*object_map)[y][x] = Object::PICKUP_SPEED;
         }
-        Game::game_instance->set_walls_destroyed(true);
+
+        // Use GameInstance instead of Game::game_instance
+        GameScene* gameScene = GameInstance::getCurrentGameScene();
+        if (gameScene) {
+            gameScene->setWallsDestroyed(true);
+        }
+
         return true;
     }
 }

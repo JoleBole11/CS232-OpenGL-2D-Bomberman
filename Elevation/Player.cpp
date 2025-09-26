@@ -1,6 +1,6 @@
 #include "Player.h"
-#include "Game.h"      
-#include "Bomb.h"      
+#include "GameInstance.h"
+#include "Bomb.h"
 
 Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* _object_map) :
     GameObject(pos, velocity, sprite)
@@ -19,8 +19,8 @@ void Player::update(float dt)
     if (dead) {
         set_is_active(false);
         set_is_visible(false);
-	}
-    
+    }
+
     glm::vec2 center = get_position() + glm::vec2(32, 32);
     int tile_x = static_cast<int>(center.x / 64.0f);
     int tile_y = static_cast<int>(center.y / 64.0f);
@@ -31,15 +31,15 @@ void Player::update(float dt)
     if (radius_timer >= 0.0f) {
         radius_timer -= dt;
         if (radius_timer <= 0.0f && radius_powered) {
-			radius_powered = false;
+            radius_powered = false;
             set_bomb_radius(bomb_radius - 2);
             radius_timer = 0.0f;
         }
-	}
+    }
     if (speed_timer >= 0.0f) {
         speed_timer -= dt;
         if (speed_timer <= 0.0f && speed_powered) {
-			speed_powered = false;
+            speed_powered = false;
             set_speed(speed - 50);
             speed_timer = 0.0f;
         }
@@ -81,21 +81,28 @@ void Player::update(float dt)
     }
 
     if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
-        Game::game_instance->addBomb(tile_x, tile_y, bomb_radius);
+        // Use GameInstance instead of Game::game_instance
+        GameScene* gameScene = GameInstance::getCurrentGameScene();
+        if (gameScene) {
+            gameScene->addBomb(tile_x, tile_y, bomb_radius);
+        }
         bomb_cooldown = 3.0f;
     }
 
     if ((*object_map)[tile_y][tile_x] == Object::KILL_OBJECT)
-		dead = true;
+        dead = true;
 
     if ((*object_map)[tile_y][tile_x] == Object::PICKUP_SPEED)
     {
         set_speed(speed + 50);
         (*object_map)[tile_y][tile_x] = 0;
 
-        Game::game_instance->removeObjectAt(tile_x, tile_y);
+        GameScene* gameScene = GameInstance::getCurrentGameScene();
+        if (gameScene) {
+            gameScene->removeObjectAt(tile_x, tile_y);
+            gameScene->setWallsDestroyed(true);
+        }
 
-        Game::game_instance->set_walls_destroyed(true);
         set_speed_timer(5.0f);
         speed_powered = true;
     }
@@ -104,7 +111,10 @@ void Player::update(float dt)
         set_bomb_radius(bomb_radius + 2);
         (*object_map)[tile_y][tile_x] = 0;
 
-        Game::game_instance->removeObjectAt(tile_x, tile_y);
+        GameScene* gameScene = GameInstance::getCurrentGameScene();
+        if (gameScene) {
+            gameScene->removeObjectAt(tile_x, tile_y);
+        }
 
         set_radius_timer(5.0f);
         radius_powered = true;
