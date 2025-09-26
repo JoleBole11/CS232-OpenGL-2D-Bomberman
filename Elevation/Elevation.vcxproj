@@ -150,22 +150,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bomb.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Intro.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bomb.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Intro.h" />
     <ClInclude Include="ObjectsEnum.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="WallsEnum.h" />
   </ItemGroup>
   <ItemGroup>

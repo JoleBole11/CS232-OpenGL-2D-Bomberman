@@ -10,12 +10,12 @@ const float tile_size = 64.0f;
 Game::Game(int argc, char** argv,
 	const char* title,
 	const int WIDTH, const int HEIGHT,
-	const int POSITION_X, const int POSITION_Y) :
+	const int POSITION_X, const int POSITION_Y, const int WINDOW_WIDTH, const int WINDOW_HEIGHT) :
 	width(WIDTH), height(HEIGHT)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(WIDTH, HEIGHT);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutInitWindowPosition(POSITION_X, POSITION_Y);
 	glutCreateWindow(title);
 

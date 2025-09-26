@@ -12,6 +12,8 @@ private:
     // Dimensions
     const int width;
     const int height;
+	const int window_width = 1048;
+	const int window_height = 960;
 
     // Map textures
     int texture_cols = 15;
@@ -73,6 +75,6 @@ public:
     Game(int argc, char** argv,
         const char* title,
         const int WIDTH, const int HEIGHT,
-        const int POSITION_X, const int POSITION_Y);
+        const int POSITION_X, const int POSITION_Y, const int WINDOW_WIDTH, const int WINDOW_HEIGHT);
     virtual ~Game();
 };
