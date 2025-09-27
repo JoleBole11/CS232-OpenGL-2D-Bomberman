@@ -13,7 +13,8 @@
 GameScene::GameScene() : Scene("Game"),
 height_map(nullptr),
 walls_destroyed(false),
-random_bomb_timer(0.0f) {  // Add this initialization
+random_bomb_timer(0.0f),
+gameEnded(false) {  // Add this initialization
     // Initialize default characters
     player1Character = CharacterType::WHITE;
     player2Character = CharacterType::BLACK;
@@ -392,6 +393,8 @@ void GameScene::handleKeyboard(unsigned char key, int x, int y) {
 }
 
 void GameScene::onEnter() {
+    std::cout << "Entering GameScene..." << std::endl;
+    
     // Register this scene with GameInstance when entering
     GameInstance::getInstance()->setCurrentGameScene(this);
 
@@ -411,8 +414,8 @@ void GameScene::onEnter() {
             << ", Player 2: " << static_cast<int>(p2Char) << std::endl;
     }
 
-    // Now load textures with the correct characters
-    loadTextures();
+    // Reset the entire game state
+    resetGame();
 }
 
 void GameScene::onExit() {
@@ -421,6 +424,11 @@ void GameScene::onExit() {
 }
 
 void GameScene::checkForWinner() {
+    // Don't check for winner if game already ended
+    if (gameEnded) {
+        return;
+    }
+
     int activePlayers = 0;
     Player* survivor = nullptr;
     int survivorId = 0;
@@ -434,13 +442,16 @@ void GameScene::checkForWinner() {
     }
 
     if (activePlayers == 1 && survivor) {
-        // One player wins - use correct member variable names
+        // One player wins
+        gameEnded = true;  // Set the flag
+        std::cout << "Player " << survivorId << " wins!" << std::endl;
+
         CharacterType winnerCharacterType;
         if (survivorId == 1) {
-            winnerCharacterType = player1Character;  // This should match your member variable name
+            winnerCharacterType = player1Character;
         }
         else {
-            winnerCharacterType = player2Character;  // This should match your member variable name
+            winnerCharacterType = player2Character;
         }
 
         SceneManager* sceneManager = SceneManager::getInstance();
@@ -452,13 +463,38 @@ void GameScene::checkForWinner() {
     }
     else if (activePlayers == 0) {
         // Draw - both players died
+        gameEnded = true;  // Set the flag
+        std::cout << "It's a draw! Both players died." << std::endl;
+
         SceneManager* sceneManager = SceneManager::getInstance();
         WinScene* winScene = dynamic_cast<WinScene*>(sceneManager->getScene("Win"));
         if (winScene) {
-            winScene->setDraw(player1Character, player2Character);  // Use correct member names
+            winScene->setDraw(player1Character, player2Character);
         }
         sceneManager->changeScene("Win");
     }
+}
+
+void GameScene::resetGame() {
+    std::cout << "Resetting game state..." << std::endl;
+
+    // Reset game ended flag
+    gameEnded = false;
+
+    // Clear and recreate all game objects
+    cleanup();
+
+    // Reinitialize maps
+    initializeMaps();
+
+    // Reset game state variables
+    walls_destroyed = false;
+    random_bomb_timer = 0.0f;
+
+    // Reload textures and recreate players
+    loadTextures();
+
+    std::cout << "Game state reset complete." << std::endl;
 }
 
 std::vector<std::pair<int, int>> GameScene::getAvailableTiles() {

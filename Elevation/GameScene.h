@@ -31,6 +31,7 @@ private:
 
     // Game state
     bool walls_destroyed;
+    bool gameEnded;
 
     // Character selection
     CharacterType player1Character;
@@ -56,6 +57,7 @@ private:
     CharacterType getPlayerCharacterById(int playerId);
     void spawnRandomBomb();
     void checkForWinner();
+    void resetGame();
 
 public:
     GameScene();

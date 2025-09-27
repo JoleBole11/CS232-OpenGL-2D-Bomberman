@@ -446,10 +446,20 @@ void MainMenuScene::cleanup() {
 }
 
 void MainMenuScene::onEnter() {
+    std::cout << "Entering MainMenuScene..." << std::endl;
+
     currentState = MenuState::MAIN_MENU;
     selectedCharacterIndex = 0;
     player1Selected = false;
     player2Selected = false;
     player1Character = CharacterType::WHITE;
     player2Character = CharacterType::BLACK;
+
+    // Make sure GameScene is reset when we return to main menu
+    SceneManager* sceneManager = SceneManager::getInstance();
+    GameScene* gameScene = dynamic_cast<GameScene*>(sceneManager->getScene("Game"));
+    if (gameScene) {
+        // The game scene will be reset when we enter it next time
+        std::cout << "GameScene available for next reset." << std::endl;
+    }
 }
