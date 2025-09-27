@@ -8,7 +8,7 @@
 #include "CharacterTypesEnum.h"
 #include "GameInstance.h"
 #include "GameScene.h"
-
+#include "AudioManager.h"
 
 
 class MainMenuScene : public Scene {

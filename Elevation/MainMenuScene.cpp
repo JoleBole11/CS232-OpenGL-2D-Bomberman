@@ -26,7 +26,6 @@ MainMenuScene::~MainMenuScene() {
 }
 
 void MainMenuScene::initialize() {
-    // Create title text
     titleText = new TextRenderer(
         glm::vec2(140, 800),
         new Sprite("Resources/font.png", glm::vec2(64), 1, glm::vec2(15, 8), true),
@@ -34,7 +33,6 @@ void MainMenuScene::initialize() {
     );
     titleText->setText("BOMBERMAN");
 
-    // Create instruction text - Updated to be clear about 2-player
     instructionText = new TextRenderer(
         glm::vec2(360, 500),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
@@ -42,7 +40,6 @@ void MainMenuScene::initialize() {
     );
     instructionText->setText("PRESS_ENTER");
 
-    // Create player texts
     player1Text = new TextRenderer(
         glm::vec2(300, 600),
         new Sprite("Resources/font.png", glm::vec2(48), 1, glm::vec2(15, 8), true),
@@ -182,18 +179,15 @@ void MainMenuScene::update(float deltaTime) {
         break;
     case MenuState::START:
     {
-        // Debug output
         std::cout << "Starting game with:" << std::endl;
         std::cout << "  Player 1: " << getCharacterName(player1Character)
             << " (" << static_cast<int>(player1Character) << ")" << std::endl;
         std::cout << "  Player 2: " << getCharacterName(player2Character)
             << " (" << static_cast<int>(player2Character) << ")" << std::endl;
 
-        // Transition to game scene
         SceneManager* sceneManager = SceneManager::getInstance();
         sceneManager->changeScene("Game");
 
-        // Reset state so we don't keep trying to change scenes
         currentState = MenuState::MAIN_MENU;
     }
     break;
@@ -369,10 +363,8 @@ void MainMenuScene::renderPlayer2Selection() {
     if (menuControlsText)
 		menuControlsText->render();
 
-    // Render character previews
     for (int i = 0; i < characterPreviews.size(); i++) {
         if (characterPreviews[i]) {
-            // Dim unavailable characters
             if (!isCharacterAvailable(static_cast<CharacterType>(i)) && currentState == MenuState::PLAYER2_SELECT) {
                 glColor3f(0.5f, 0.5f, 0.5f);
             }
@@ -380,16 +372,14 @@ void MainMenuScene::renderPlayer2Selection() {
                 glColor3f(1.0f, 1.0f, 1.0f);
             }
             characterPreviews[i]->render();
-            glColor3f(1.0f, 1.0f, 1.0f); // Reset color
+            glColor3f(1.0f, 1.0f, 1.0f);
         }
     }
 
-    // Render selector
     if (selector && currentState == MenuState::PLAYER2_SELECT) {
         selector->render();
     }
 
-    // Render player indicators
     if (player1Selected && player1Indicator) {
         player1Indicator->render();
     }
@@ -397,7 +387,6 @@ void MainMenuScene::renderPlayer2Selection() {
         player2Indicator->render();
     }
 
-    // Render character names
     TextRenderer nameRenderer(
         glm::vec2(100, 220),
         new Sprite("Resources/font.png", glm::vec2(24), 1, glm::vec2(15, 8), true),
@@ -446,7 +435,8 @@ void MainMenuScene::cleanup() {
 }
 
 void MainMenuScene::onEnter() {
-    std::cout << "Entering MainMenuScene..." << std::endl;
+	AudioManager::stopMusic();
+	AudioManager::playSong("menuSong");
 
     currentState = MenuState::MAIN_MENU;
     selectedCharacterIndex = 0;
@@ -455,11 +445,6 @@ void MainMenuScene::onEnter() {
     player1Character = CharacterType::WHITE;
     player2Character = CharacterType::BLACK;
 
-    // Make sure GameScene is reset when we return to main menu
     SceneManager* sceneManager = SceneManager::getInstance();
     GameScene* gameScene = dynamic_cast<GameScene*>(sceneManager->getScene("Game"));
-    if (gameScene) {
-        // The game scene will be reset when we enter it next time
-        std::cout << "GameScene available for next reset." << std::endl;
-    }
 }

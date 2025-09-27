@@ -70,18 +70,13 @@ public:
     void onEnter() override;
     void onExit() override;
 
-    void handleKeyboard(unsigned char key, int x, int y) override;
-
-    // Game-specific methods - Updated to include player ID for character-specific colors
     void addBomb(int tile_x, int tile_y, int radius, int playerId);
     void addExplosion(int tile_x, int tile_y, int radius, CharacterType character);
     void removeObjectAt(int tile_x, int tile_y);
     void setWallsDestroyed(bool destroyed) { walls_destroyed = destroyed; }
 
-    // Character selection
     void setPlayerCharacters(CharacterType p1Char, CharacterType p2Char);
 
-    // Getters for game state
     const std::vector<std::vector<int>>& getTileMap() const { return tile_map; }
     const std::vector<std::vector<int>>& getObjectMap() const { return object_map; }
     int* getHeightMap() const { return height_map; }

@@ -87,6 +87,15 @@
     <ClCompile Include="WinScene.cpp">
       <Filter>Source Files\Scene Logic\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="AudioManager.cpp">
+      <Filter>Source Files\Primary Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Dictionary.cpp">
+      <Filter>Source Files\Primary Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="DictionaryItem.cpp">
+      <Filter>Source Files\Primary Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectsEnum.h">
@@ -151,6 +160,15 @@
     </ClInclude>
     <ClInclude Include="WinScene.h">
       <Filter>Header Files\Scene Logic\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioManager.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Dictionary.h">
+      <Filter>Header Files\Primary Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="DictionaryItem.h">
+      <Filter>Header Files\Primary Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

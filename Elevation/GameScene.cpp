@@ -9,13 +9,11 @@
 #include "GameInstance.h"
 #include "WinScene.h"
 
-// GameScene implementation
 GameScene::GameScene() : Scene("Game"),
 height_map(nullptr),
 walls_destroyed(false),
 random_bomb_timer(0.0f),
-gameEnded(false) {  // Add this initialization
-    // Initialize default characters
+gameEnded(false) {
     player1Character = CharacterType::WHITE;
     player2Character = CharacterType::BLACK;
 }
@@ -26,57 +24,49 @@ GameScene::~GameScene() {
 }
 
 void GameScene::initialize() {
-    // Initialize default characters
     player1Character = CharacterType::WHITE;
     player2Character = CharacterType::BLACK;
 
-    // Initialize maps first
     initializeMaps();
 
-    // Register this scene with GameInstance
     GameInstance::getInstance()->setCurrentGameScene(this);
-
-    // Don't load textures here - wait for onEnter() when we have character selections
 
     initialized = true;
 }
 
 void GameScene::initializeMaps() {
-    // Initialize tile map
     tile_map = {
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, Wall::RADIUS, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::SPEED, 0},
+       {0, Wall::SPEED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, Wall::RADIUS, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
-    // Initialize height map
     height_map = new int[195] {
         2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2,
+        2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2,
+        2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
         };
 
-    // Initialize object map
     object_map = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -93,7 +83,6 @@ void GameScene::initializeMaps() {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
-    // Update height map based on tile and object maps
     int rows = static_cast<int>(tile_map.size());
     int cols = static_cast<int>(tile_map[0].size());
 
@@ -128,7 +117,6 @@ bool GameScene::loadTextures() {
     for (auto& p : players) delete p;
     players.clear();
 
-    // Create player 1
     Player* player1 = new Player(
         glm::vec2(64, 64),
         glm::vec2(0),
@@ -140,12 +128,11 @@ bool GameScene::loadTextures() {
         ),
         height_map,
         &object_map,
-        1  // Player ID 1
+        1
     );
-    player1->get_sprite()->set_current_frame(1); // Standing frame
+    player1->get_sprite()->set_current_frame(1);
     players.push_back(player1);
 
-    // Create player 2 - FIXED POSITION AND DUPLICATE PUSH
     Player* player2 = new Player(
         glm::vec2(64 * 13, 64 * 11),
         glm::vec2(0),
@@ -157,12 +144,11 @@ bool GameScene::loadTextures() {
         ),
         height_map,
         &object_map,
-        2  // Player ID 2
+        2
     );
-    player2->get_sprite()->set_current_frame(1); // Standing frame
+    player2->get_sprite()->set_current_frame(1);
     players.push_back(player2);
 
-    // Create background map
     GameObject* map = new GameObject(
         glm::vec2(0, 0),
         glm::vec2(0),
@@ -176,7 +162,6 @@ bool GameScene::loadTextures() {
     map->get_sprite()->set_current_frame(0);
     mapV.push_back(map);
 
-    // Create tiles from tile_map
     for (int row = 0; row < tile_map.size(); ++row) {
         for (int col = 0; col < tile_map[row].size(); ++col) {
             float origin_x = (width - tile_map[0].size() * tile_size) / 2.0f;
@@ -253,47 +238,39 @@ bool GameScene::loadTextures() {
 }
 
 void GameScene::update(float deltaTime) {
-    // Update players first
     for (auto& p : players) {
         if (p && p->get_is_active()) {
             p->update(deltaTime);
         }
     }
 
-    // Update objects safely
     updateObjects(deltaTime);
 
-    // Clean up inactive objects AFTER updating
     cleanupInactiveObjects();
 
-    // Rebuild tiles if walls were destroyed
     if (walls_destroyed) {
         rebuildTiles();
         walls_destroyed = false;
     }
 
-    // Handle random bomb spawning
     random_bomb_timer += deltaTime;
     if (random_bomb_timer >= RANDOM_BOMB_INTERVAL) {
         spawnRandomBomb();
         random_bomb_timer = 0.0f;
     }
 
-    // Check if someone won
     checkForWinner();
 }
 
 void GameScene::updateObjects(float deltaTime) {
-    // Use index-based iteration to avoid iterator invalidation
     for (size_t i = 0; i < objects.size(); ++i) {
-        if (objects[i] && objects[i]->get_is_active()) {  // Add null check and active check
+        if (objects[i] && objects[i]->get_is_active()) {
             objects[i]->update(deltaTime);
         }
     }
 }
 
 void GameScene::cleanupInactiveObjects() {
-    // Clean up players
     auto pl = players.begin();
     while (pl != players.end()) {
         if (!(*pl)->get_is_active()) {
@@ -305,7 +282,6 @@ void GameScene::cleanupInactiveObjects() {
         }
     }
 
-    // Clean up tiles
     auto t = tiles.begin();
     while (t != tiles.end()) {
         if (!(*t)->get_is_active()) {
@@ -317,7 +293,6 @@ void GameScene::cleanupInactiveObjects() {
         }
     }
 
-    // Clean up objects
     auto ob = objects.begin();
     while (ob != objects.end()) {
         if (!(*ob)->get_is_active()) {
@@ -333,26 +308,22 @@ void GameScene::cleanupInactiveObjects() {
 void GameScene::render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Render background
     for (auto& m : mapV) {
         m->render();
     }
 
-    // Render tiles
     for (auto& t : tiles) {
         if (t->get_is_active() && t->get_is_visible()) {
             t->render();
         }
     }
 
-    // Render objects
     for (auto& o : objects) {
         if (o->get_is_active() && o->get_is_visible()) {
             o->render();
         }
     }
 
-    // Render players
     for (auto& p : players) {
         if (p->get_is_active() && p->get_is_visible()) {
             p->render();
@@ -387,18 +358,13 @@ void GameScene::cleanup() {
     }
 }
 
-void GameScene::handleKeyboard(unsigned char key, int x, int y) {
-    // Handle scene-specific keyboard input if needed
-    // Most input is handled directly in Player::update() via Input class
-}
 
 void GameScene::onEnter() {
-    std::cout << "Entering GameScene..." << std::endl;
+	AudioManager::stopMusic();
+	AudioManager::playSong("gameSong");
     
-    // Register this scene with GameInstance when entering
     GameInstance::getInstance()->setCurrentGameScene(this);
 
-    // Get character selections from MainMenuScene if available
     SceneManager* sceneManager = SceneManager::getInstance();
     MainMenuScene* mainMenu = dynamic_cast<MainMenuScene*>(sceneManager->getScene("MainMenu"));
 
@@ -406,25 +372,18 @@ void GameScene::onEnter() {
         CharacterType p1Char = mainMenu->getPlayer1Character();
         CharacterType p2Char = mainMenu->getPlayer2Character();
 
-        // Set the character selections
         player1Character = p1Char;
         player2Character = p2Char;
-
-        std::cout << "Loading game with Player 1: " << static_cast<int>(p1Char)
-            << ", Player 2: " << static_cast<int>(p2Char) << std::endl;
     }
 
-    // Reset the entire game state
     resetGame();
 }
 
 void GameScene::onExit() {
-    // Unregister this scene from GameInstance when exiting
     GameInstance::getInstance()->setCurrentGameScene(nullptr);
 }
 
 void GameScene::checkForWinner() {
-    // Don't check for winner if game already ended
     if (gameEnded) {
         return;
     }
@@ -442,8 +401,7 @@ void GameScene::checkForWinner() {
     }
 
     if (activePlayers == 1 && survivor) {
-        // One player wins
-        gameEnded = true;  // Set the flag
+        gameEnded = true;
         std::cout << "Player " << survivorId << " wins!" << std::endl;
 
         CharacterType winnerCharacterType;
@@ -462,8 +420,7 @@ void GameScene::checkForWinner() {
         sceneManager->changeScene("Win");
     }
     else if (activePlayers == 0) {
-        // Draw - both players died
-        gameEnded = true;  // Set the flag
+        gameEnded = true;
         std::cout << "It's a draw! Both players died." << std::endl;
 
         SceneManager* sceneManager = SceneManager::getInstance();
@@ -478,20 +435,15 @@ void GameScene::checkForWinner() {
 void GameScene::resetGame() {
     std::cout << "Resetting game state..." << std::endl;
 
-    // Reset game ended flag
     gameEnded = false;
 
-    // Clear and recreate all game objects
     cleanup();
 
-    // Reinitialize maps
     initializeMaps();
 
-    // Reset game state variables
     walls_destroyed = false;
     random_bomb_timer = 0.0f;
 
-    // Reload textures and recreate players
     loadTextures();
 
     std::cout << "Game state reset complete." << std::endl;
@@ -511,16 +463,14 @@ std::vector<std::pair<int, int>> GameScene::getAvailableTiles() {
         for (int x = 0; x < cols; ++x) {
             int height_map_index = x + y * cols;
 
-            // Check if tile is walkable (height_map == 1)
             if (height_map[height_map_index] == 1) {
-                // Check object_map bounds and if tile is empty
-                int object_map_y = rows - 1 - y; // Convert from height_map coords to object_map coords
+               
+                int object_map_y = rows - 1 - y;
 
                 if (object_map_y >= 0 && object_map_y < static_cast<int>(object_map.size()) &&
                     x >= 0 && x < static_cast<int>(object_map[object_map_y].size())) {
 
                     if (object_map[object_map_y][x] == 0) {
-                        // Check if players are not on this tile (with some margin)
                         bool playerOnTile = false;
                         float tile_center_x = x * tile_size + (960 - cols * tile_size) / 2.0f + tile_size / 2;
                         float tile_center_y = y * tile_size + (832 - rows * tile_size) / 2.0f + tile_size / 2;
@@ -530,9 +480,8 @@ std::vector<std::pair<int, int>> GameScene::getAvailableTiles() {
                                 glm::vec2 player_pos = player->get_position();
                                 glm::vec2 player_center = player_pos + glm::vec2(32, 32);
 
-                                // Check if player is within this tile (with small margin)
                                 float distance = glm::distance(player_center, glm::vec2(tile_center_x, tile_center_y));
-                                if (distance < tile_size / 2 + 10) { // 10 pixel margin
+                                if (distance < tile_size / 2 + 10) {
                                     playerOnTile = true;
                                     break;
                                 }
@@ -588,7 +537,7 @@ CharacterType GameScene::getPlayerCharacterById(int playerId) {
     else if (playerId == 2) {
         return player2Character;
     }
-    return CharacterType::WHITE; // Default fallback
+    return CharacterType::WHITE;
 }
 
 void GameScene::addBomb(int tile_x, int tile_y, int radius, int playerId) {
@@ -612,7 +561,6 @@ void GameScene::addBomb(int tile_x, int tile_y, int radius, int playerId) {
         tile_y * tile_size + origin_y
     );
 
-    // Get character type for this player
     CharacterType character = getPlayerCharacterById(playerId);
 
     Bomb* new_bomb = new Bomb(
@@ -629,7 +577,7 @@ void GameScene::addBomb(int tile_x, int tile_y, int radius, int playerId) {
         tile_x,
         tile_y_reversed,
         radius,
-        character  // Pass character type to bomb
+        character
     );
     new_bomb->get_sprite()->set_current_frame(2);
     objects.push_back(new_bomb);
@@ -647,21 +595,18 @@ void GameScene::spawnRandomBomb() {
         return;
     }
 
-    // Seed random number generator (you might want to do this once in initialize())
     static bool seeded = false;
     if (!seeded) {
         srand(static_cast<unsigned int>(time(nullptr)));
         seeded = true;
     }
 
-    // Pick a random tile
     int randomIndex = rand() % availableTiles.size();
     std::pair<int, int> selectedTile = availableTiles[randomIndex];
 
     int tile_x = selectedTile.first;
     int tile_y = selectedTile.second;
 
-    // Convert from height_map coordinates to world coordinates
     int world_tile_y = 12 - tile_y;
 
     std::cout << "Spawning random bomb at tile (" << tile_x << ", " << world_tile_y << ")" << std::endl;
@@ -717,14 +662,11 @@ void GameScene::addExplosion(int tile_x, int tile_y, int radius, CharacterType c
 
 void GameScene::removeObjectAt(int tile_x, int tile_y)
 {
-    // Bounds check for safety
     if (tile_x < 0 || tile_x >= object_map[0].size() || tile_y < 0 || tile_y >= object_map.size())
         return;
 
-    // Remove object from object_map
     object_map[tile_y][tile_x] = 0;
 
-    // Remove corresponding GameObject from objects vector if present
     auto it = objects.begin();
     while (it != objects.end()) {
         glm::vec2 obj_pos = (*it)->get_position();
@@ -743,11 +685,9 @@ void GameScene::removeObjectAt(int tile_x, int tile_y)
 }
 
 void GameScene::rebuildTiles() {
-    // Clear existing tiles
     for (auto& t : tiles) delete t;
     tiles.clear();
 
-    // Rebuild tiles from tile_map
     for (int row = 0; row < tile_map.size(); ++row) {
         for (int col = 0; col < tile_map[row].size(); ++col) {
             float origin_x = (width - tile_map[0].size() * tile_size) / 2.0f;
@@ -820,7 +760,6 @@ void GameScene::rebuildTiles() {
         }
     }
 
-    // Add pickup objects from object_map
     for (int row = 0; row < object_map.size(); ++row) {
         for (int col = 0; col < object_map[row].size(); ++col) {
             float origin_x = (width - object_map[0].size() * tile_size) / 2.0f;
@@ -884,22 +823,19 @@ void GameScene::setPlayerCharacters(CharacterType p1Char, CharacterType p2Char) 
     player1Character = p1Char;
     player2Character = p2Char;
 
-    // If already initialized and active, rebuild players with new characters
     if (initialized && GameInstance::getInstance()->getCurrentGameScene() == this) {
         initializePlayersWithCharacters();
     }
 }
 
 void GameScene::initializePlayersWithCharacters() {
-    // Clear existing players
     for (auto& p : players) {
         delete p;
     }
     players.clear();
 
-    // Create player 1
     Player* player1 = new Player(
-        glm::vec2(64, 64),  // Bottom-left spawn
+        glm::vec2(64, 64),
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player1Character),
@@ -909,14 +845,13 @@ void GameScene::initializePlayersWithCharacters() {
         ),
         height_map,
         &object_map,
-        1  // Player ID 1
+        1
     );
     player1->get_sprite()->set_current_frame(0);
     players.push_back(player1);
 
-    // Create player 2 - FIXED POSITION
     Player* player2 = new Player(
-        glm::vec2(832, 704),  // Top-right spawn (13*64, 11*64)
+        glm::vec2(832, 704),
         glm::vec2(0),
         new Sprite(
             getCharacterSpritePath(player2Character),
@@ -926,8 +861,8 @@ void GameScene::initializePlayersWithCharacters() {
         ),
         height_map,
         &object_map,
-        2  // Player ID 2
+        2
     );
     player2->get_sprite()->set_current_frame(0);
-    players.push_back(player2);  // FIXED: Was missing this line
+    players.push_back(player2);
 }

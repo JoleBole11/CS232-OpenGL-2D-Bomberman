@@ -22,7 +22,6 @@ public:
     void changeScene(const std::string& name);
     void update(float deltaTime);
     void render();
-    void handleInput();
 
     Scene* getCurrentScene() const { return currentScene; }
 
@@ -32,10 +31,6 @@ public:
     // OpenGL callbacks
     void display();
     void reshape(int width, int height);
-    void keyboard(unsigned char key, int x, int y);
-    void keyboardUp(unsigned char key, int x, int y);
-    void mouse(int button, int state, int x, int y);
-    void motion(int x, int y);
 
     ~SceneManager();
 };

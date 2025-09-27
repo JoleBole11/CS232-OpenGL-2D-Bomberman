@@ -56,9 +56,6 @@ void SceneManager::render() {
     }
 }
 
-void SceneManager::handleInput() {
-    // Input is handled through callbacks
-}
 
 Scene* SceneManager::getScene(const std::string& name) const
 {
@@ -90,30 +87,6 @@ void SceneManager::reshape(int width, int height) {
     gluOrtho2D(0, width, 0, height);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-}
-
-void SceneManager::keyboard(unsigned char key, int x, int y) {
-    if (currentScene) {
-        currentScene->handleKeyboard(key, x, y);
-    }
-}
-
-void SceneManager::keyboardUp(unsigned char key, int x, int y) {
-    if (currentScene) {
-        currentScene->handleKeyboardUp(key, x, y);
-    }
-}
-
-void SceneManager::mouse(int button, int state, int x, int y) {
-    if (currentScene) {
-        currentScene->handleMouse(button, state, x, y);
-    }
-}
-
-void SceneManager::motion(int x, int y) {
-    if (currentScene) {
-        currentScene->handleMotion(x, y);
-    }
 }
 
 SceneManager::~SceneManager() {

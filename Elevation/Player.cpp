@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "GameScene.h"
 #include "Bomb.h"
+#include "AudioManager.h"
 
 Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* _object_map, int playerId) :
     GameObject(pos, velocity, sprite), frame_timer(0.0f), current_anim_frame(0)  // Initialize animation variables
@@ -37,6 +38,7 @@ void Player::update(float dt)
             radius_powered = false;
             set_bomb_radius(bomb_radius - 2);
             radius_timer = 0.0f;
+            AudioManager::playSound("losePickup");
         }
     }
     if (speed_timer >= 0.0f) {
@@ -45,6 +47,7 @@ void Player::update(float dt)
             speed_powered = false;
             set_speed(speed - 50);
             speed_timer = 0.0f;
+            AudioManager::playSound("losePickup");
         }
     }
 
@@ -54,71 +57,68 @@ void Player::update(float dt)
     glm::vec2 flip = sprite->get_sprite_flip();
     bool moving = false;
 
-    // Handle different controls based on player ID
     if (player_id == 1) {
-        // Player 1 controls: WASD + V
         if (Input::getKey('W')) {
-            set_velocity(glm::vec2(0, speed));
-            moving = true;
-            flip.x = false;
-            sprite->set_sprite_flip(flip);
-            current_direction_frame = 4;  // Up animation frames start at 4
-        }
-        else if (Input::getKey('S')) {
-            set_velocity(glm::vec2(0, -speed));
-            moving = true;
-            flip.x = false;
-            sprite->set_sprite_flip(flip);
-            current_direction_frame = 0;  // Down animation frames start at 0
-        }
-        else if (Input::getKey('A')) {
-            set_velocity(glm::vec2(-speed, 0));
-            moving = true;
-            flip.x = false;
-            sprite->set_sprite_flip(flip);
-            current_direction_frame = 8;  // Left animation frames start at 8
-        }
-        else if (Input::getKey('D')) {
-            set_velocity(glm::vec2(speed, 0));
-            moving = true;
-            flip.x = true;
-            sprite->set_sprite_flip(flip);
-            current_direction_frame = 8;  // Right animation frames start at 8
-        }
-
-        if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
-            GameScene* gameScene = GameInstance::getCurrentGameScene();
-            if (gameScene) {
-                // Pass player ID to addBomb so it can determine character color
-                gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
-            }
-            bomb_cooldown = 3.0f;
-        }
-    }
-    else if (player_id == 2) {
-        // Player 2 controls: IJKL + N
-        if (Input::getKey('I')) { // Up
             set_velocity(glm::vec2(0, speed));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 4;
         }
-        else if (Input::getKey('K')) { // Down
+        else if (Input::getKey('S')) {
             set_velocity(glm::vec2(0, -speed));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 0;
         }
-        else if (Input::getKey('J')) { // Left
+        else if (Input::getKey('A')) {
             set_velocity(glm::vec2(-speed, 0));
             moving = true;
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 8;
         }
-        else if (Input::getKey('L')) { // Right
+        else if (Input::getKey('D')) {
+            set_velocity(glm::vec2(speed, 0));
+            moving = true;
+            flip.x = true;
+            sprite->set_sprite_flip(flip);
+            current_direction_frame = 8;
+        }
+
+        if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
+            GameScene* gameScene = GameInstance::getCurrentGameScene();
+            if (gameScene) {
+                gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
+            }
+            bomb_cooldown = 3.0f;
+            AudioManager::playSound("placeBomb");
+        }
+    }
+    else if (player_id == 2) {
+        if (Input::getKey('I')) {
+            set_velocity(glm::vec2(0, speed));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_direction_frame = 4;
+        }
+        else if (Input::getKey('K')) {
+            set_velocity(glm::vec2(0, -speed));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_direction_frame = 0;
+        }
+        else if (Input::getKey('J')) {
+            set_velocity(glm::vec2(-speed, 0));
+            moving = true;
+            flip.x = false;
+            sprite->set_sprite_flip(flip);
+            current_direction_frame = 8;
+        }
+        else if (Input::getKey('L')) {
             set_velocity(glm::vec2(speed, 0));
             moving = true;
             flip.x = true;
@@ -129,14 +129,13 @@ void Player::update(float dt)
         if (Input::getKeyDown('N') && bomb_cooldown <= 0.0f) {
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
-                // Pass player ID to addBomb so it can determine character color
                 gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
             }
             bomb_cooldown = 3.0f;
+            AudioManager::playSound("placeBomb");
         }
     }
 
-    // Handle object interactions
     if (tile_y >= 0 && tile_y < object_map->size() &&
         tile_x >= 0 && tile_x < (*object_map)[tile_y].size()) {
 
@@ -155,6 +154,7 @@ void Player::update(float dt)
 
             set_speed_timer(5.0f);
             speed_powered = true;
+            AudioManager::playSound("gainPickup");
         }
         if ((*object_map)[tile_y][tile_x] == Object::PICKUP_RADIUS) {
             set_bomb_radius(bomb_radius + 2);
@@ -167,6 +167,7 @@ void Player::update(float dt)
 
             set_radius_timer(5.0f);
             radius_powered = true;
+            AudioManager::playSound("gainPickup");
         }
     }
 

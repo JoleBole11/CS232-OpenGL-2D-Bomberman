@@ -8,10 +8,11 @@
 #include <iostream>
 #include "MainMenuScene.h"
 #include "WinScene.h"
+#include "AudioManager.h"
 
 // Global variables for window management
 const int WINDOW_WIDTH = 960;
-const int WINDOW_HEIGHT = 832;
+const int WINDOW_HEIGHT = 960;
 const int GAME_WIDTH = 960;
 const int GAME_HEIGHT = 832;
 const int WINDOW_POS_X = 50;
@@ -39,27 +40,6 @@ void reshapeCallback(int width, int height) {
     SceneManager::getInstance()->reshape(width, height);
 }
 
-void keyboardCallback(unsigned char key, int x, int y) {
-    // Handle input through Input class first
-    Input::keyboard(key, x, y);
-    // Then pass to scene manager
-    SceneManager::getInstance()->keyboard(key, x, y);
-}
-
-void keyboardUpCallback(unsigned char key, int x, int y) {
-    Input::keyboardUp(key, x, y);
-    SceneManager::getInstance()->keyboardUp(key, x, y);
-}
-
-void mouseCallback(int button, int state, int x, int y) {
-    Input::mouseClick(button, state, x, y);
-    SceneManager::getInstance()->mouse(button, state, x, y);
-}
-
-void motionCallback(int x, int y) {
-    SceneManager::getInstance()->motion(x, y);
-}
-
 void passiveMotionCallback(int x, int y) {
     Input::updateMouse(x, y);
 }
@@ -67,50 +47,49 @@ void passiveMotionCallback(int x, int y) {
 void timerCallback(int value) {
     Input::update();
     glutPostRedisplay();
-    glutTimerFunc(16, timerCallback, 0); // ~60 FPS
+    glutTimerFunc(16, timerCallback, 0);
+}
+
+void setupAudio() {
+    AudioManager::init();
+    AudioManager::addSound("placeBomb", "resources/placeBomb.mp3");
+    AudioManager::addSound("explosion", "resources/explosion.mp3");
+    AudioManager::addSound("gainPickup", "resources/pickupEffect.mp3");
+    AudioManager::addSound("losePickup", "resources/losePickup.mp3");
+    AudioManager::addSong("menuSong", "resources/menuSong.mp3");
+    AudioManager::addSong("gameSong", "resources/gameSong.mp3");
 }
 
 int main(int argc, char** argv) {
-    try {
-        // Initialize GLUT
-        glutInit(&argc, argv);
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_ALPHA);
-        glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        glutInitWindowPosition(WINDOW_POS_X, WINDOW_POS_Y);
-        glutCreateWindow("Bomberman");
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_ALPHA);
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    glutInitWindowPosition(WINDOW_POS_X, WINDOW_POS_Y);
+    glutCreateWindow("Bomberman");
 
-        // Initialize OpenGL
-        initGL();
+    initGL();
 
-        // Set up GLUT callbacks
-        glutDisplayFunc(displayCallback);
-        glutReshapeFunc(reshapeCallback);
-        glutKeyboardFunc(keyboardCallback);
-        glutKeyboardUpFunc(keyboardUpCallback);
-        glutMouseFunc(mouseCallback);
-        glutMotionFunc(motionCallback);
-        glutPassiveMotionFunc(passiveMotionCallback);
-        glutTimerFunc(16, timerCallback, 0);
+	Input::setCallbackFunctions();
+    glutDisplayFunc(displayCallback);
+    glutReshapeFunc(reshapeCallback);
+    //glutKeyboardFunc(keyboardCallback);
+    //glutKeyboardUpFunc(keyboardUpCallback);
+    //glutMouseFunc(mouseCallback);
+    //glutMotionFunc(motionCallback);
+    //glutPassiveMotionFunc(passiveMotionCallback);
+    //glutTimerFunc(16, timerCallback, 0);
+    setupAudio();
 
-        // Initialize scene manager and add scenes
-        SceneManager* sceneManager = SceneManager::getInstance();
+    SceneManager* sceneManager = SceneManager::getInstance();
 
-        // Create and add scenes
-        sceneManager->addScene("Intro", std::make_unique<IntroScene>());
-        sceneManager->addScene("MainMenu", std::make_unique<MainMenuScene>());
-        sceneManager->addScene("Game", std::make_unique<GameScene>());
-        sceneManager->addScene("Win", std::make_unique<WinScene>());  // Add this line
+    sceneManager->addScene("Intro", std::make_unique<IntroScene>());
+    sceneManager->addScene("MainMenu", std::make_unique<MainMenuScene>());
+    sceneManager->addScene("Game", std::make_unique<GameScene>());
+    sceneManager->addScene("Win", std::make_unique<WinScene>());
 
-        // Start with intro scene
-        sceneManager->changeScene("Intro");
+    sceneManager->changeScene("Intro");
 
-        // Start the main loop
-        glutMainLoop();
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return -1;
-    }
+    glutMainLoop();
 
     return 0;
 }
