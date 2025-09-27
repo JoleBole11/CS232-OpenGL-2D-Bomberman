@@ -163,6 +163,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
+    <ClCompile Include="WinScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bomb.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="WallsEnum.h" />
+    <ClInclude Include="WinScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -5,11 +5,18 @@
 #include "SceneManager.h"
 #include <iostream>
 #include <cstdlib>
-#include <ctime>
+#include <ctime>  
 #include "GameInstance.h"
+#include "WinScene.h"
 
 // GameScene implementation
-GameScene::GameScene() : Scene("Game"), height_map(nullptr), walls_destroyed(false) {
+GameScene::GameScene() : Scene("Game"),
+height_map(nullptr),
+walls_destroyed(false),
+random_bomb_timer(0.0f) {  // Add this initialization
+    // Initialize default characters
+    player1Character = CharacterType::WHITE;
+    player2Character = CharacterType::BLACK;
 }
 
 
@@ -245,15 +252,17 @@ bool GameScene::loadTextures() {
 }
 
 void GameScene::update(float deltaTime) {
-    // Update players
+    // Update players first
     for (auto& p : players) {
-        p->update(deltaTime);
+        if (p && p->get_is_active()) {
+            p->update(deltaTime);
+        }
     }
 
-    // Update objects
+    // Update objects safely
     updateObjects(deltaTime);
 
-    // Clean up inactive objects
+    // Clean up inactive objects AFTER updating
     cleanupInactiveObjects();
 
     // Rebuild tiles if walls were destroyed
@@ -261,11 +270,24 @@ void GameScene::update(float deltaTime) {
         rebuildTiles();
         walls_destroyed = false;
     }
+
+    // Handle random bomb spawning
+    random_bomb_timer += deltaTime;
+    if (random_bomb_timer >= RANDOM_BOMB_INTERVAL) {
+        spawnRandomBomb();
+        random_bomb_timer = 0.0f;
+    }
+
+    // Check if someone won
+    checkForWinner();
 }
 
 void GameScene::updateObjects(float deltaTime) {
-    for (auto& o : objects) {
-        o->update(deltaTime);
+    // Use index-based iteration to avoid iterator invalidation
+    for (size_t i = 0; i < objects.size(); ++i) {
+        if (objects[i] && objects[i]->get_is_active()) {  // Add null check and active check
+            objects[i]->update(deltaTime);
+        }
     }
 }
 
@@ -398,6 +420,101 @@ void GameScene::onExit() {
     GameInstance::getInstance()->setCurrentGameScene(nullptr);
 }
 
+void GameScene::checkForWinner() {
+    int activePlayers = 0;
+    Player* survivor = nullptr;
+    int survivorId = 0;
+
+    for (auto& player : players) {
+        if (player && player->get_is_active()) {
+            activePlayers++;
+            survivor = player;
+            survivorId = player->get_player_id();
+        }
+    }
+
+    if (activePlayers == 1 && survivor) {
+        // One player wins - use correct member variable names
+        CharacterType winnerCharacterType;
+        if (survivorId == 1) {
+            winnerCharacterType = player1Character;  // This should match your member variable name
+        }
+        else {
+            winnerCharacterType = player2Character;  // This should match your member variable name
+        }
+
+        SceneManager* sceneManager = SceneManager::getInstance();
+        WinScene* winScene = dynamic_cast<WinScene*>(sceneManager->getScene("Win"));
+        if (winScene) {
+            winScene->setWinner(survivorId, winnerCharacterType);
+        }
+        sceneManager->changeScene("Win");
+    }
+    else if (activePlayers == 0) {
+        // Draw - both players died
+        SceneManager* sceneManager = SceneManager::getInstance();
+        WinScene* winScene = dynamic_cast<WinScene*>(sceneManager->getScene("Win"));
+        if (winScene) {
+            winScene->setDraw(player1Character, player2Character);  // Use correct member names
+        }
+        sceneManager->changeScene("Win");
+    }
+}
+
+std::vector<std::pair<int, int>> GameScene::getAvailableTiles() {
+    std::vector<std::pair<int, int>> availableTiles;
+    const int cols = 15;
+    const int rows = 13;
+
+    if (!height_map) {
+        std::cout << "Height map is null!" << std::endl;
+        return availableTiles;
+    }
+
+    for (int y = 0; y < rows; ++y) {
+        for (int x = 0; x < cols; ++x) {
+            int height_map_index = x + y * cols;
+
+            // Check if tile is walkable (height_map == 1)
+            if (height_map[height_map_index] == 1) {
+                // Check object_map bounds and if tile is empty
+                int object_map_y = rows - 1 - y; // Convert from height_map coords to object_map coords
+
+                if (object_map_y >= 0 && object_map_y < static_cast<int>(object_map.size()) &&
+                    x >= 0 && x < static_cast<int>(object_map[object_map_y].size())) {
+
+                    if (object_map[object_map_y][x] == 0) {
+                        // Check if players are not on this tile (with some margin)
+                        bool playerOnTile = false;
+                        float tile_center_x = x * tile_size + (960 - cols * tile_size) / 2.0f + tile_size / 2;
+                        float tile_center_y = y * tile_size + (832 - rows * tile_size) / 2.0f + tile_size / 2;
+
+                        for (const auto& player : players) {
+                            if (player && player->get_is_active()) {
+                                glm::vec2 player_pos = player->get_position();
+                                glm::vec2 player_center = player_pos + glm::vec2(32, 32);
+
+                                // Check if player is within this tile (with small margin)
+                                float distance = glm::distance(player_center, glm::vec2(tile_center_x, tile_center_y));
+                                if (distance < tile_size / 2 + 10) { // 10 pixel margin
+                                    playerOnTile = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!playerOnTile) {
+                            availableTiles.push_back(std::make_pair(x, y));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return availableTiles;
+}
+
 const char* GameScene::getBombSpritePath(CharacterType character) {
     switch (character) {
     case CharacterType::WHITE:
@@ -484,6 +601,39 @@ void GameScene::addBomb(int tile_x, int tile_y, int radius, int playerId) {
     std::cout << "Bomb created at world tile (" << tile_x << ", " << tile_y
         << ") array pos (" << tile_x << ", " << tile_y_reversed << ") for character "
         << static_cast<int>(character) << std::endl;
+}
+
+void GameScene::spawnRandomBomb() {
+    std::vector<std::pair<int, int>> availableTiles = getAvailableTiles();
+
+    if (availableTiles.empty()) {
+        std::cout << "No available tiles for random bomb spawn!" << std::endl;
+        return;
+    }
+
+    // Seed random number generator (you might want to do this once in initialize())
+    static bool seeded = false;
+    if (!seeded) {
+        srand(static_cast<unsigned int>(time(nullptr)));
+        seeded = true;
+    }
+
+    // Pick a random tile
+    int randomIndex = rand() % availableTiles.size();
+    std::pair<int, int> selectedTile = availableTiles[randomIndex];
+
+    int tile_x = selectedTile.first;
+    int tile_y = selectedTile.second;
+
+    // Convert from height_map coordinates to world coordinates
+    int world_tile_y = 12 - tile_y;
+
+    std::cout << "Spawning random bomb at tile (" << tile_x << ", " << world_tile_y << ")" << std::endl;
+
+    int randomColor = rand() % 4;
+    int radius = 2;
+
+    addBomb(tile_x, world_tile_y, radius, randomColor);
 }
 
 void GameScene::addExplosion(int tile_x, int tile_y, int radius, CharacterType character) {

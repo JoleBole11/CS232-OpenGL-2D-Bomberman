@@ -7,6 +7,7 @@
 #include <memory>
 #include <iostream>
 #include "MainMenuScene.h"
+#include "WinScene.h"
 
 // Global variables for window management
 const int WINDOW_WIDTH = 960;
@@ -98,6 +99,7 @@ int main(int argc, char** argv) {
         sceneManager->addScene("Intro", std::make_unique<IntroScene>());
         sceneManager->addScene("MainMenu", std::make_unique<MainMenuScene>());
         sceneManager->addScene("Game", std::make_unique<GameScene>());
+        sceneManager->addScene("Win", std::make_unique<WinScene>());  // Add this line
 
         // Start with intro scene
         sceneManager->changeScene("Intro");

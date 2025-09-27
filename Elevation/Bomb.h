@@ -24,6 +24,7 @@ public:
         std::vector<std::vector<int>>* _object_map, int tx, int ty, int rad, CharacterType char_type);
     ~Bomb();
 
+
     void update(float dt);
     CharacterType getCharacter() const { return character; }
 };

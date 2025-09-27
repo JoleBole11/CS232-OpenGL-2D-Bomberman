@@ -84,6 +84,9 @@
     <ClCompile Include="MainMenuScene.cpp">
       <Filter>Source Files\Scene Logic\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="WinScene.cpp">
+      <Filter>Source Files\Scene Logic\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectsEnum.h">
@@ -91,9 +94,6 @@
     </ClInclude>
     <ClInclude Include="WallsEnum.h">
       <Filter>Header Files\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Header Files\Scene Logic</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Scene Logic</Filter>
@@ -145,6 +145,12 @@
     </ClInclude>
     <ClInclude Include="MenuStatesEnum.h">
       <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Header Files\Scene Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="WinScene.h">
+      <Filter>Header Files\Scene Logic\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

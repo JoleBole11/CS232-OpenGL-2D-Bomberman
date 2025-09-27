@@ -1,34 +1,68 @@
 #include "Explosion.h"
 #include "GameScene.h"
-#include "GameInstance.h"  // Add this include
-#include <iostream>        // Add this include
+#include "GameInstance.h"
+#include <iostream>
 
 bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int frame_edge, int frame_normal)
 {
+    // Add bounds checking for height_map
+    if (height_map_index < 0 || height_map_index >= (15 * 13)) {
+        return true; // Stop explosion if out of bounds
+    }
+
+    // Add bounds checking for object_map and tile_map
+    if (y < 0 || y >= static_cast<int>(object_map->size()) ||
+        x < 0 || x >= static_cast<int>((*object_map)[y].size())) {
+        return true; // Stop explosion if out of bounds
+    }
+
     if (height_map[height_map_index] == 1) { // Empty check
+        // Check if another explosion already marked this position
+        if ((*object_map)[y][x] == Object::KILL_OBJECT) {
+            // Position already marked for killing, just add visual effect
+            int frame = (i == static_cast<int>(radius)) ? frame_edge : frame_normal;
+            explosion_positions.push_back({ x, y, frame });
+            return false;
+        }
+
         (*object_map)[y][x] = Object::KILL_OBJECT;
         int frame = (i == static_cast<int>(radius)) ? frame_edge : frame_normal;
         explosion_positions.push_back({ x, y, frame });
         return false;
     }
     else if (height_map[height_map_index] >= 2) { // Wall check
-        if ((*tile_map)[12 - y][x] == Wall::BREAKABLE) { // Destructible check
-            (*tile_map)[12 - y][x] = 0;
-            height_map[height_map_index] = 1;
+        // Add bounds checking for tile_map access
+        int tile_map_row = 12 - y;
+        if (tile_map_row < 0 || tile_map_row >= static_cast<int>(tile_map->size()) ||
+            x < 0 || x >= static_cast<int>((*tile_map)[tile_map_row].size())) {
+            return true; // Stop explosion if out of bounds
+        }
 
-            (*object_map)[y][x] = Object::KILL_OBJECT;
-            int frame = 4;
-            explosion_positions.push_back({ x, y, frame_edge });
+        if ((*tile_map)[tile_map_row][x] == Wall::BREAKABLE) { // Destructible check
+            // Only modify if not already destroyed by another explosion
+            if ((*tile_map)[tile_map_row][x] == Wall::BREAKABLE) {
+                (*tile_map)[tile_map_row][x] = 0;
+                height_map[height_map_index] = 1;
+
+                (*object_map)[y][x] = Object::KILL_OBJECT;
+                explosion_positions.push_back({ x, y, frame_edge });
+            }
         }
-        else if ((*tile_map)[12 - y][x] == Wall::RADIUS) {
-            (*tile_map)[12 - y][x] = 0;
-            height_map[height_map_index] = 1;
-            (*object_map)[y][x] = Object::PICKUP_RADIUS;
+        else if ((*tile_map)[tile_map_row][x] == Wall::RADIUS) {
+            // Only modify if not already destroyed by another explosion
+            if ((*tile_map)[tile_map_row][x] == Wall::RADIUS) {
+                (*tile_map)[tile_map_row][x] = 0;
+                height_map[height_map_index] = 1;
+                (*object_map)[y][x] = Object::PICKUP_RADIUS;
+            }
         }
-        else if ((*tile_map)[12 - y][x] == Wall::SPEED) {
-            (*tile_map)[12 - y][x] = 0;
-            height_map[height_map_index] = 1;
-            (*object_map)[y][x] = Object::PICKUP_SPEED;
+        else if ((*tile_map)[tile_map_row][x] == Wall::SPEED) {
+            // Only modify if not already destroyed by another explosion
+            if ((*tile_map)[tile_map_row][x] == Wall::SPEED) {
+                (*tile_map)[tile_map_row][x] = 0;
+                height_map[height_map_index] = 1;
+                (*object_map)[y][x] = Object::PICKUP_SPEED;
+            }
         }
 
         // Use GameInstance instead of Game::game_instance
@@ -39,7 +73,7 @@ bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int f
 
         return true;
     }
-    return false; // Add missing return statement
+    return false;
 }
 
 Explosion::Explosion(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, int rad,
@@ -63,6 +97,11 @@ Explosion::~Explosion()
 
 void Explosion::update(float dt)
 {
+    // Don't update if already inactive
+    if (!get_is_active()) {
+        return;
+    }
+
     timer -= dt;
 
     if (!explosion_applied) {
@@ -79,70 +118,87 @@ void Explosion::update(float dt)
         std::cout << "Explosion at world pos (" << get_position().x << ", " << get_position().y << ")" << std::endl;
         std::cout << "Calculated tile pos (" << center_x << ", " << center_y << std::endl;
 
+        // Add bounds checking for the explosion center
         if (center_x < 0 || center_x >= cols || center_y < 0 || center_y >= rows) {
             std::cout << "Explosion position out of bounds!" << std::endl;
             set_is_active(false);
             set_is_visible(false);
+            explosion_applied = true; // Mark as applied to prevent re-processing
             return;
         }
 
-        (*object_map)[center_y][center_x] = Object::KILL_OBJECT;
-        explosion_positions.push_back({ center_x, center_y, 0 });
-
-        // Vertical Up
-        for (int i = 1; i <= radius; ++i) {
-            int world_y_up = center_y + i;
-
-            if (world_y_up < rows && world_y_up >= 0) { // Bounds check
-                int height_map_index = center_x + world_y_up * cols;
-
-                if (wall_type_check(height_map_index, world_y_up, center_x, i, 6, 2)) break;
-            }
+        // Validate pointers before using them
+        if (!object_map || !tile_map || !height_map) {
+            std::cout << "Invalid map pointers in explosion!" << std::endl;
+            set_is_active(false);
+            set_is_visible(false);
+            explosion_applied = true;
+            return;
         }
 
-        // Vertical Down
-        for (int i = 1; i <= radius; ++i) {
-            int world_y_down = center_y - i;
+        // Check if center position is valid in object_map
+        if (center_y >= 0 && center_y < static_cast<int>(object_map->size()) &&
+            center_x >= 0 && center_x < static_cast<int>((*object_map)[center_y].size())) {
 
-            if (world_y_down >= 0 && world_y_down < rows) { // Bounds check
-                int height_map_index = center_x + world_y_down * cols;
-
-                if (wall_type_check(height_map_index, world_y_down, center_x, i, 5, 2)) break;
+            // Only mark as kill object if not already marked
+            if ((*object_map)[center_y][center_x] != Object::KILL_OBJECT) {
+                (*object_map)[center_y][center_x] = Object::KILL_OBJECT;
             }
+            explosion_positions.push_back({ center_x, center_y, 0 });
         }
 
-        // Horizontal Left
-        for (int i = 1; i <= radius; ++i) {
-            int x_left = center_x - i;
-            if (x_left >= 0) { // Bounds check
-                int height_map_index = x_left + center_y * cols;
-
-                if (wall_type_check(height_map_index, center_y, x_left, i, 3, 1)) break;
-            }
-        }
-
-        // Horizontal Right
-        for (int i = 1; i <= radius; ++i) {
-            int x_right = center_x + i;
-            if (x_right < cols) { // Bounds check
-                int height_map_index = x_right + center_y * cols;
-
-                if (wall_type_check(height_map_index, center_y, x_right, i, 4, 1)) break;
-            }
-        }
+        // Apply explosion in all directions with bounds checking
+        applyExplosionDirection(center_x, center_y, cols, rows, 0, 1, 6, 2);   // Up
+        applyExplosionDirection(center_x, center_y, cols, rows, 0, -1, 5, 2);  // Down
+        applyExplosionDirection(center_x, center_y, cols, rows, -1, 0, 3, 1);  // Left
+        applyExplosionDirection(center_x, center_y, cols, rows, 1, 0, 4, 1);   // Right
 
         explosion_applied = true;
     }
 
     if (timer <= 0.0f) {
-        for (const auto& pos : explosion_positions) {
-            (*object_map)[pos.tile_y][pos.tile_x] = 0;
-        }
-        explosion_positions.clear();
-
+        cleanupExplosion();
         set_is_active(false);
         set_is_visible(false);
     }
+}
+
+void Explosion::applyExplosionDirection(int center_x, int center_y, int cols, int rows,
+    int dx, int dy, int frame_edge, int frame_normal) {
+    for (int i = 1; i <= radius; ++i) {
+        int target_x = center_x + (dx * i);
+        int target_y = center_y + (dy * i);
+
+        // Bounds check
+        if (target_x < 0 || target_x >= cols || target_y < 0 || target_y >= rows) {
+            break;
+        }
+
+        int height_map_index = target_x + target_y * cols;
+
+        if (wall_type_check(height_map_index, target_y, target_x, i, frame_edge, frame_normal)) {
+            break; // Wall blocks further explosion
+        }
+    }
+}
+
+// Safer cleanup method
+void Explosion::cleanupExplosion() {
+    if (!object_map) return;
+
+    // Clean up explosion positions safely
+    for (const auto& pos : explosion_positions) {
+        // Add bounds checking before clearing
+        if (pos.tile_y >= 0 && pos.tile_y < static_cast<int>(object_map->size()) &&
+            pos.tile_x >= 0 && pos.tile_x < static_cast<int>((*object_map)[pos.tile_y].size())) {
+
+            // Only clear if it's still marked as kill object (avoid clearing pickups)
+            if ((*object_map)[pos.tile_y][pos.tile_x] == Object::KILL_OBJECT) {
+                (*object_map)[pos.tile_y][pos.tile_x] = 0;
+            }
+        }
+    }
+    explosion_positions.clear();
 }
 
 void Explosion::render()
@@ -156,6 +212,11 @@ void Explosion::render()
     float origin_y = (832 - rows * tile_size) / 2.0f;
 
     for (const auto& pos : explosion_positions) {
+        // Add bounds checking for render positions
+        if (pos.tile_x < 0 || pos.tile_x >= cols || pos.tile_y < 0 || pos.tile_y >= rows) {
+            continue; // Skip invalid positions
+        }
+
         glPushMatrix();
 
         float world_x = pos.tile_x * tile_size + origin_x;

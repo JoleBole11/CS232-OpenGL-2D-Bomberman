@@ -8,6 +8,7 @@
 #include "CharacterTypesEnum.h"
 #include "MainMenuScene.h"
 #include "GameInstance.h"
+#include "WinScene.h"
 
 // Forward declarations to avoid circular dependency
 class GameInstance;
@@ -26,6 +27,7 @@ private:
     std::vector<std::vector<int>> tile_map;
     int* height_map;
     std::vector<std::vector<int>> object_map;
+    std::vector<std::pair<int, int>> getAvailableTiles();
 
     // Game state
     bool walls_destroyed;
@@ -38,6 +40,8 @@ private:
     const int width = 960;
     const int height = 832;
     const float tile_size = 64.0f;
+    float random_bomb_timer;
+    const float RANDOM_BOMB_INTERVAL = 20.0f;
 
     // Helper functions
     bool loadTextures();
@@ -50,6 +54,8 @@ private:
     const char* getExplosionSpritePath(CharacterType character);
     void initializePlayersWithCharacters();
     CharacterType getPlayerCharacterById(int playerId);
+    void spawnRandomBomb();
+    void checkForWinner();
 
 public:
     GameScene();
