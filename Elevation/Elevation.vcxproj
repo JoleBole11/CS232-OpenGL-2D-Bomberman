@@ -157,7 +157,6 @@
   <ItemGroup>
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Bomb.cpp" />
-    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Dictionary.cpp" />
     <ClCompile Include="DictionaryItem.cpp" />
     <ClCompile Include="Explosion.cpp" />
@@ -176,7 +175,6 @@
   <ItemGroup>
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Bomb.h" />
-    <ClInclude Include="Button.h" />
     <ClInclude Include="CharacterTypesEnum.h" />
     <ClInclude Include="Dictionary.h" />
     <ClInclude Include="DictionaryItem.h" />

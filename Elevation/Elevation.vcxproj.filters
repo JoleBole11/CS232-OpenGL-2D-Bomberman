@@ -60,9 +60,6 @@
     <ClCompile Include="Explosion.cpp">
       <Filter>Source Files\Player Logic</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Source Files\Primary Logic</Filter>
-    </ClCompile>
     <ClCompile Include="TextRenderer.cpp">
       <Filter>Source Files\Primary Logic</Filter>
     </ClCompile>
@@ -112,9 +109,6 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files\Player Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Header Files\Primary Logic</Filter>
     </ClInclude>
     <ClInclude Include="GameInstance.h">
       <Filter>Header Files\Primary Logic</Filter>
