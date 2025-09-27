@@ -11,7 +11,7 @@
 
 // Global variables for window management
 const int WINDOW_WIDTH = 960;
-const int WINDOW_HEIGHT = 960;
+const int WINDOW_HEIGHT = 832;
 const int GAME_WIDTH = 960;
 const int GAME_HEIGHT = 832;
 const int WINDOW_POS_X = 50;
