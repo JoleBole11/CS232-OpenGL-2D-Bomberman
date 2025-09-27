@@ -1,9 +1,8 @@
 #pragma once
 #include "GameObject.h"
-#include "GameInstance.h"  // Add this include
+#include "GameInstance.h"
 #include <vector>
 
-// Forward declaration
 class GameScene;
 
 class Explosion : public GameObject

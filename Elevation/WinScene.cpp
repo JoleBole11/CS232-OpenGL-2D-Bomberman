@@ -22,7 +22,6 @@ WinScene::~WinScene() {
 }
 
 void WinScene::initialize() {
-    // Create title text
     titleText = new TextRenderer(
         glm::vec2(300, 700),
         new Sprite("Resources/font.png", glm::vec2(64), 1, glm::vec2(15, 8), true),
@@ -30,14 +29,12 @@ void WinScene::initialize() {
     );
     titleText->setText("GAME_OVER");
 
-    // Create winner text
     winnerText = new TextRenderer(
         glm::vec2(200, 550),
         new Sprite("Resources/font.png", glm::vec2(48), 1, glm::vec2(15, 8), true),
         40, 32
     );
 
-    // Create instruction text
     instructionText = new TextRenderer(
         glm::vec2(250, 200),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
@@ -49,7 +46,7 @@ void WinScene::initialize() {
 }
 
 void WinScene::update(float deltaTime) {
-    if (Input::getKeyDown(13)) { // Enter key
+    if (Input::getKeyDown(13)) {
         SceneManager::getInstance()->changeScene("MainMenu");
     }
 }
@@ -62,12 +59,10 @@ void WinScene::render() {
     if (instructionText) instructionText->render();
 
     if (isDraw) {
-        // Render both characters for draw
         if (player1Character) player1Character->render();
         if (player2Character) player2Character->render();
     }
     else {
-        // Render single winner character
         if (winnerCharacter) winnerCharacter->render();
     }
 }
@@ -94,12 +89,10 @@ void WinScene::cleanup() {
 
 void WinScene::onEnter() {
     if (isDraw) {
-        // Set up draw screen
         if (winnerText) {
             winnerText->setText("IT_S_A_DRAW");
         }
 
-        // Clean up existing characters
         if (player1Character) {
             delete player1Character;
             player1Character = nullptr;
@@ -109,9 +102,8 @@ void WinScene::onEnter() {
             player2Character = nullptr;
         }
 
-        // Create both character sprites for draw screen
         player1Character = new GameObject(
-            glm::vec2(300, 400),  // Left side
+            glm::vec2(300, 400),
             glm::vec2(0),
             new Sprite(getCharacterSpritePath(player1CharacterType), glm::vec2(128), 1, glm::vec2(4, 3))
         );
@@ -119,7 +111,7 @@ void WinScene::onEnter() {
         player1Character->set_scale(glm::vec2(1.5f, 1.5f));
 
         player2Character = new GameObject(
-            glm::vec2(600, 400),  // Right side
+            glm::vec2(600, 400),
             glm::vec2(0),
             new Sprite(getCharacterSpritePath(player2CharacterType), glm::vec2(128), 1, glm::vec2(4, 3))
         );
@@ -127,13 +119,11 @@ void WinScene::onEnter() {
         player2Character->set_scale(glm::vec2(1.5f, 1.5f));
     }
     else {
-        // Normal win screen setup
         if (winnerText) {
             std::string winText = (winningPlayer == 1) ? "PLAYER_1_WINS" : "PLAYER_2_WINS";
             winnerText->setText(winText);
         }
 
-        // Clean up existing winner character
         if (winnerCharacter) {
             delete winnerCharacter;
             winnerCharacter = nullptr;

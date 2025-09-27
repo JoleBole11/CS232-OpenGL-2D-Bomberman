@@ -18,7 +18,6 @@ public:
 
     ~GameInstance() = default;
 
-    // Delete copy constructor and assignment operator
     GameInstance(const GameInstance&) = delete;
     GameInstance& operator=(const GameInstance&) = delete;
 };

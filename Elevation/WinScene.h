@@ -12,7 +12,6 @@ private:
     TextRenderer* instructionText;
     GameObject* winnerCharacter;
 
-    // Enhanced draw support
     bool isDraw;
     CharacterType player1CharacterType;
     CharacterType player2CharacterType;

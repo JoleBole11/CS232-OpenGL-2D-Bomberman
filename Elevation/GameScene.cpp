@@ -433,7 +433,6 @@ void GameScene::checkForWinner() {
 }
 
 void GameScene::resetGame() {
-    std::cout << "Resetting game state..." << std::endl;
 
     gameEnded = false;
 
@@ -445,8 +444,6 @@ void GameScene::resetGame() {
     random_bomb_timer = 0.0f;
 
     loadTextures();
-
-    std::cout << "Game state reset complete." << std::endl;
 }
 
 std::vector<std::pair<int, int>> GameScene::getAvailableTiles() {
@@ -455,7 +452,7 @@ std::vector<std::pair<int, int>> GameScene::getAvailableTiles() {
     const int rows = 13;
 
     if (!height_map) {
-        std::cout << "Height map is null!" << std::endl;
+        std::cout << "Height map is null." << std::endl;
         return availableTiles;
     }
 
@@ -591,7 +588,7 @@ void GameScene::spawnRandomBomb() {
     std::vector<std::pair<int, int>> availableTiles = getAvailableTiles();
 
     if (availableTiles.empty()) {
-        std::cout << "No available tiles for random bomb spawn!" << std::endl;
+        std::cout << "No available tiles for random bomb" << std::endl;
         return;
     }
 
@@ -619,7 +616,7 @@ void GameScene::spawnRandomBomb() {
 
 void GameScene::addExplosion(int tile_x, int tile_y, int radius, CharacterType character) {
     if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
-        std::cout << "Explosion coordinates out of bounds!" << std::endl;
+        std::cout << "Explosion coordinates out of bounds" << std::endl;
         return;
     }
 
@@ -656,8 +653,6 @@ void GameScene::addExplosion(int tile_x, int tile_y, int radius, CharacterType c
     );
     new_explosion->get_sprite()->set_current_frame(0);
     objects.push_back(new_explosion);
-
-    std::cout << "Explosion object created and added to objects vector" << std::endl;
 }
 
 void GameScene::removeObjectAt(int tile_x, int tile_y)

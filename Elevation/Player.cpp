@@ -5,7 +5,7 @@
 #include "AudioManager.h"
 
 Player::Player(glm::vec2 pos, glm::vec2 velocity, Sprite* sprite, int* _height_map, std::vector<std::vector<int>>* _object_map, int playerId) :
-    GameObject(pos, velocity, sprite), frame_timer(0.0f), current_anim_frame(0)  // Initialize animation variables
+    GameObject(pos, velocity, sprite), frame_timer(0.0f), current_anim_frame(0)
 {
     height_map = _height_map;
     object_map = _object_map;
@@ -171,27 +171,23 @@ void Player::update(float dt)
         }
     }
 
-    // Handle animation
-    const float ANIMATION_SPEED = 0.15f;  // Time between frames
-    const int FRAMES_PER_DIRECTION = 4;   // Number of animation frames per direction
+    const float ANIMATION_SPEED = 0.15f;
+    const int FRAMES= 4; 
 
     if (moving) {
         frame_timer += dt;
         if (frame_timer >= ANIMATION_SPEED) {
-            current_anim_frame = (current_anim_frame + 1) % FRAMES_PER_DIRECTION;
+            current_anim_frame = (current_anim_frame + 1) % FRAMES;
             frame_timer = 0.0f;
         }
-        // Set the actual sprite frame: base direction frame + animation offset
         sprite->set_current_frame(current_direction_frame + current_anim_frame);
     }
     else {
-        // When not moving, show standing frame (frame 1 in each direction)
         current_anim_frame = 0;
         frame_timer = 0.0f;
-        sprite->set_current_frame(1);  // Standing frame
+        sprite->set_current_frame(1);
     }
 
-    // Handle movement with collision detection
     glm::vec2 current_pos = get_position();
     glm::vec2 x_movement = glm::vec2(get_velocity().x * dt, 0);
     glm::vec2 new_x_position = current_pos + x_movement;

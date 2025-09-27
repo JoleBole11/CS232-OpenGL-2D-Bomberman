@@ -10,41 +10,34 @@
 #include "GameInstance.h"
 #include "WinScene.h"
 
-// Forward declarations to avoid circular dependency
 class GameInstance;
 class MainMenuScene;
 class Player;
 
 class GameScene : public Scene {
 private:
-    // Game objects
     std::vector<Player*> players;
     std::vector<GameObject*> mapV;
     std::vector<GameObject*> tiles;
     std::vector<GameObject*> objects;
 
-    // Maps
     std::vector<std::vector<int>> tile_map;
     int* height_map;
     std::vector<std::vector<int>> object_map;
     std::vector<std::pair<int, int>> getAvailableTiles();
 
-    // Game state
     bool walls_destroyed;
     bool gameEnded;
 
-    // Character selection
     CharacterType player1Character;
     CharacterType player2Character;
 
-    // Constants
     const int width = 960;
     const int height = 832;
     const float tile_size = 64.0f;
     float random_bomb_timer;
     const float RANDOM_BOMB_INTERVAL = 20.0f;
 
-    // Helper functions
     bool loadTextures();
     void rebuildTiles();
     void updateObjects(float deltaTime);

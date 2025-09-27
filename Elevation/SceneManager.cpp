@@ -23,12 +23,11 @@ void SceneManager::changeScene(const std::string& name) {
         shouldChangeScene = true;
     }
     else {
-        std::cerr << "Scene '" << name << "' not found!" << std::endl;
+        std::cerr << "Scene '" << name << "' not found." << std::endl;
     }
 }
 
 void SceneManager::update(float deltaTime) {
-    // Handle scene change
     if (shouldChangeScene && nextScene) {
         if (currentScene) {
             currentScene->onExit();
@@ -44,7 +43,6 @@ void SceneManager::update(float deltaTime) {
         currentScene->onEnter();
     }
 
-    // Update current scene
     if (currentScene) {
         currentScene->update(deltaTime);
     }
@@ -66,7 +64,6 @@ Scene* SceneManager::getScene(const std::string& name) const
     return nullptr;
 }
 
-// OpenGL callback functions
 void SceneManager::display() {
     static int lastTime = glutGet(GLUT_ELAPSED_TIME);
     int currentTime = glutGet(GLUT_ELAPSED_TIME);

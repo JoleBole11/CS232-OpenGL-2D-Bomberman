@@ -163,7 +163,6 @@
     <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="GameInstance.cpp" />
     <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IntroScene.cpp" />
     <ClCompile Include="MainMenuScene.cpp" />
@@ -185,7 +184,6 @@
     <ClInclude Include="GameInstance.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="GameState.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IntroScene.h" />
     <ClInclude Include="MainMenuScene.h" />

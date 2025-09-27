@@ -23,7 +23,6 @@ private:
 	TextRenderer* controlsText1;
     TextRenderer* controlsText2;
 
-    // Character selection
     std::vector<GameObject*> characterPreviews;
     int selectedCharacterIndex;
     CharacterType player1Character;
@@ -31,12 +30,10 @@ private:
     bool player1Selected;
     bool player2Selected;
 
-    // Visual indicators
     GameObject* selector;
     GameObject* player1Indicator;
     GameObject* player2Indicator;
 
-    // Input handling
     bool keyPressed;
 
     void initializeCharacterPreviews();

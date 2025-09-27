@@ -6,7 +6,6 @@
 #include <vector>
 #include "GameScene.h"
 
-// Forward declaration
 class GameScene;
 
 class Player :

@@ -10,7 +10,7 @@
 #include "WinScene.h"
 #include "AudioManager.h"
 
-// Global variables for window management
+// Window vars
 const int WINDOW_WIDTH = 960;
 const int WINDOW_HEIGHT = 960;
 const int GAME_WIDTH = 960;
@@ -26,12 +26,10 @@ void initGL() {
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glDisable(GL_DEPTH_TEST);
 
-    // Enable alpha blending for transparency
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-// GLUT callback wrapper functions
 void displayCallback() {
     SceneManager::getInstance()->display();
 }
@@ -72,12 +70,6 @@ int main(int argc, char** argv) {
 	Input::setCallbackFunctions();
     glutDisplayFunc(displayCallback);
     glutReshapeFunc(reshapeCallback);
-    //glutKeyboardFunc(keyboardCallback);
-    //glutKeyboardUpFunc(keyboardUpCallback);
-    //glutMouseFunc(mouseCallback);
-    //glutMotionFunc(motionCallback);
-    //glutPassiveMotionFunc(passiveMotionCallback);
-    //glutTimerFunc(16, timerCallback, 0);
     setupAudio();
 
     SceneManager* sceneManager = SceneManager::getInstance();

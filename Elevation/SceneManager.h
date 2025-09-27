@@ -25,10 +25,8 @@ public:
 
     Scene* getCurrentScene() const { return currentScene; }
 
-    // Add method to get specific scene
     Scene* getScene(const std::string& name) const;
 
-    // OpenGL callbacks
     void display();
     void reshape(int width, int height);
 

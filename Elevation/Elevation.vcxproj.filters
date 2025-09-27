@@ -69,9 +69,6 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files\Primary Logic</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>Source Files\Primary Logic</Filter>
-    </ClCompile>
     <ClCompile Include="GameInstance.cpp">
       <Filter>Source Files\Primary Logic</Filter>
     </ClCompile>
@@ -123,9 +120,6 @@
       <Filter>Header Files\Primary Logic</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files\Primary Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
       <Filter>Header Files\Primary Logic</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">

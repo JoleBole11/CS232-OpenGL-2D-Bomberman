@@ -179,12 +179,6 @@ void MainMenuScene::update(float deltaTime) {
         break;
     case MenuState::START:
     {
-        std::cout << "Starting game with:" << std::endl;
-        std::cout << "  Player 1: " << getCharacterName(player1Character)
-            << " (" << static_cast<int>(player1Character) << ")" << std::endl;
-        std::cout << "  Player 2: " << getCharacterName(player2Character)
-            << " (" << static_cast<int>(player2Character) << ")" << std::endl;
-
         SceneManager* sceneManager = SceneManager::getInstance();
         sceneManager->changeScene("Game");
 
