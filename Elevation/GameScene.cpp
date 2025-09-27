@@ -398,7 +398,47 @@ void GameScene::onExit() {
     GameInstance::getInstance()->setCurrentGameScene(nullptr);
 }
 
-void GameScene::addBomb(int tile_x, int tile_y, int radius) {
+const char* GameScene::getBombSpritePath(CharacterType character) {
+    switch (character) {
+    case CharacterType::WHITE:
+        return "resources/bombWhite.png";
+    case CharacterType::BLACK:
+        return "resources/bombBlack.png";
+    case CharacterType::BLUE:
+        return "resources/bombBlue.png";
+    case CharacterType::RED:
+        return "resources/bombRed.png";
+    default:
+        return "resources/bombBlack.png";
+    }
+}
+
+const char* GameScene::getExplosionSpritePath(CharacterType character) {
+    switch (character) {
+    case CharacterType::WHITE:
+        return "resources/explosionWhite.png";
+    case CharacterType::BLACK:
+        return "resources/explosionBlack.png";
+    case CharacterType::BLUE:
+        return "resources/explosionBlue.png";
+    case CharacterType::RED:
+        return "resources/explosionRed.png";
+    default:
+        return "resources/explosionBlack.png";
+    }
+}
+
+CharacterType GameScene::getPlayerCharacterById(int playerId) {
+    if (playerId == 1) {
+        return player1Character;
+    }
+    else if (playerId == 2) {
+        return player2Character;
+    }
+    return CharacterType::WHITE; // Default fallback
+}
+
+void GameScene::addBomb(int tile_x, int tile_y, int radius, int playerId) {
     if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
         return;
     }
@@ -419,11 +459,14 @@ void GameScene::addBomb(int tile_x, int tile_y, int radius) {
         tile_y * tile_size + origin_y
     );
 
+    // Get character type for this player
+    CharacterType character = getPlayerCharacterById(playerId);
+
     Bomb* new_bomb = new Bomb(
         bomb_pos,
         glm::vec2(0),
         new Sprite(
-            "resources/bombBlack.png",
+            getBombSpritePath(character),
             glm::vec2(tile_size),
             1,
             glm::vec2(3, 1)
@@ -432,16 +475,18 @@ void GameScene::addBomb(int tile_x, int tile_y, int radius) {
         &object_map,
         tile_x,
         tile_y_reversed,
-        radius
+        radius,
+        character  // Pass character type to bomb
     );
     new_bomb->get_sprite()->set_current_frame(2);
     objects.push_back(new_bomb);
 
     std::cout << "Bomb created at world tile (" << tile_x << ", " << tile_y
-        << ") array pos (" << tile_x << ", " << tile_y_reversed << ")" << std::endl;
+        << ") array pos (" << tile_x << ", " << tile_y_reversed << ") for character "
+        << static_cast<int>(character) << std::endl;
 }
 
-void GameScene::addExplosion(int tile_x, int tile_y, int radius) {
+void GameScene::addExplosion(int tile_x, int tile_y, int radius, CharacterType character) {
     if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
         std::cout << "Explosion coordinates out of bounds!" << std::endl;
         return;
@@ -449,7 +494,8 @@ void GameScene::addExplosion(int tile_x, int tile_y, int radius) {
 
     int tile_y_reversed = 12 - tile_y;
     std::cout << "Explosion created at world tile (" << tile_x << ", " << tile_y
-        << ") array pos (" << tile_x << ", " << tile_y_reversed << ")" << std::endl;
+        << ") array pos (" << tile_x << ", " << tile_y_reversed << ") for character "
+        << static_cast<int>(character) << std::endl;
 
     float origin_x = (width - 15 * tile_size) / 2.0f;
     float origin_y = (height - 13 * tile_size) / 2.0f;
@@ -465,7 +511,7 @@ void GameScene::addExplosion(int tile_x, int tile_y, int radius) {
         explosion_pos,
         glm::vec2(0),
         new Sprite(
-            "resources/explosionBlack.png",
+            getExplosionSpritePath(character),
             glm::vec2(tile_size),
             1,
             glm::vec2(7, 1)

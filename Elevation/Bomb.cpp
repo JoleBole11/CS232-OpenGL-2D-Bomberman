@@ -1,7 +1,8 @@
 #include "Bomb.h"
 #include "GameInstance.h"  // Add this include
 
-Bomb::Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, std::vector<std::vector<int>>* _object_map, int tx, int ty, int rad)
+Bomb::Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time,
+    std::vector<std::vector<int>>* _object_map, int tx, int ty, int rad, CharacterType char_type)
     : GameObject(pos, vel, spr)
 {
     timer = time;
@@ -10,6 +11,7 @@ Bomb::Bomb(const glm::vec2& pos, const glm::vec2& vel, Sprite* spr, float time, 
     tile_x = tx;
     tile_y = ty;
     radius = rad;
+    character = char_type; // Store character type
 }
 
 Bomb::~Bomb()
@@ -44,7 +46,8 @@ void Bomb::update(float dt)
         // Use GameInstance instead of Game::game_instance
         GameScene* gameScene = GameInstance::getCurrentGameScene();
         if (gameScene) {
-            gameScene->addExplosion(tile_x, 12 - tile_y, radius);
+            // Pass character type to create character-specific explosion
+            gameScene->addExplosion(tile_x, 12 - tile_y, radius, character);
         }
 
         set_is_active(false);

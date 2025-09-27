@@ -89,7 +89,8 @@ void Player::update(float dt)
         if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
-                gameScene->addBomb(tile_x, tile_y, bomb_radius);
+                // Pass player ID to addBomb so it can determine character color
+                gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
             }
             bomb_cooldown = 3.0f;
         }
@@ -128,7 +129,8 @@ void Player::update(float dt)
         if (Input::getKeyDown('N') && bomb_cooldown <= 0.0f) {
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
-                gameScene->addBomb(tile_x, tile_y, bomb_radius);
+                // Pass player ID to addBomb so it can determine character color
+                gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
             }
             bomb_cooldown = 3.0f;
         }

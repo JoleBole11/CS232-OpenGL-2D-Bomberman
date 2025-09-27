@@ -46,7 +46,10 @@ private:
     void cleanupInactiveObjects();
     void initializeMaps();
     const char* getCharacterSpritePath(CharacterType character);
+    const char* getBombSpritePath(CharacterType character);
+    const char* getExplosionSpritePath(CharacterType character);
     void initializePlayersWithCharacters();
+    CharacterType getPlayerCharacterById(int playerId);
 
 public:
     GameScene();
@@ -61,9 +64,9 @@ public:
 
     void handleKeyboard(unsigned char key, int x, int y) override;
 
-    // Game-specific methods
-    void addBomb(int tile_x, int tile_y, int radius);
-    void addExplosion(int tile_x, int tile_y, int radius);
+    // Game-specific methods - Updated to include player ID for character-specific colors
+    void addBomb(int tile_x, int tile_y, int radius, int playerId);
+    void addExplosion(int tile_x, int tile_y, int radius, CharacterType character);
     void removeObjectAt(int tile_x, int tile_y);
     void setWallsDestroyed(bool destroyed) { walls_destroyed = destroyed; }
 
