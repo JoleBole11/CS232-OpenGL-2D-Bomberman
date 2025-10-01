@@ -149,16 +149,16 @@ void GameScene::initialize() {
 void GameScene::initializeMaps() {
     tile_map = {
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, Wall::RADIUS, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0},
+       {0, Wall::BOMB_WALL, 0, Wall::RADIUS, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0, Wall::BREAKABLE, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0},
        {0, 0, 0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::BOMB_WALL, 0, Wall::UNBREAKABLE, 0, Wall::SPEED, 0},
+       {0, 0, 0, Wall::BREAKABLE, 0, 0, 0, Wall::BREAKABLE, 0, Wall::BOMB_WALL, 0, Wall::BREAKABLE, 0, Wall::SPEED, 0},
        {0, Wall::SPEED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, Wall::UNBREAKABLE, 0, Wall::SPEED, 0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, Wall::UNBREAKABLE, 0, Wall::SPEED, 0, Wall::BREAKABLE, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0},
+       {0, Wall::BREAKABLE, 0, Wall::BREAKABLE, 0, 0, 0, Wall::RADIUS , 0, 0, 0, 0, 0, Wall::UNBREAKABLE, 0},
+       {0, 0, 0, Wall::BREAKABLE, 0, 0, 0, Wall::UNBREAKABLE , 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, Wall::BOMB_WALL, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
@@ -489,7 +489,7 @@ void GameScene::update(float deltaTime) {
         random_bomb_timer = 0.0f;
     }
 
-    if (players[0]->get_is_active() && players[1]->get_is_active()) {
+    if (players.size() >= 2 && players[0]->get_is_active() && players[1]->get_is_active()) {
         p1_bombs_text->setText(std::to_string(players[0]->get_availabe_bombs()));
         p2_bombs_text->setText(std::to_string(players[1]->get_availabe_bombs()));
         p1_bomb_timer_text->setText(players[0]->get_bomb_cooldown() > 0.0f ? std::to_string(static_cast<int>(players[0]->get_bomb_cooldown()) + 1) : "");
@@ -518,7 +518,7 @@ void GameScene::update(float deltaTime) {
             p2_speed_sprite->set_is_visible(true);
         else
             p2_speed_sprite->set_is_visible(false);
-	}
+    }
 
     checkForWinner();
 }
@@ -910,12 +910,6 @@ void GameScene::spawnRandomBomb() {
         return;
     }
 
-    static bool seeded = false;
-    if (!seeded) {
-        srand(static_cast<unsigned int>(time(nullptr)));
-        seeded = true;
-    }
-
     int randomIndex = rand() % availableTiles.size();
     std::pair<int, int> selectedTile = availableTiles[randomIndex];
 
@@ -1104,7 +1098,7 @@ void GameScene::rebuildTiles() {
                     pos,
                     glm::vec2(0),
                     new Sprite(
-                        "resources/powerUpLR.png",
+                        "resources/speed.png",
                         glm::vec2(tile_size),
                         1,
                         glm::vec2(1)
@@ -1118,7 +1112,7 @@ void GameScene::rebuildTiles() {
                     pos,
                     glm::vec2(0),
                     new Sprite(
-                        "resources/powerUpUD.png",
+                        "resources/radius.png",
                         glm::vec2(tile_size),
                         1,
                         glm::vec2(1)

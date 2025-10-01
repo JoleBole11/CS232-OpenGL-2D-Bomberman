@@ -209,6 +209,7 @@ void Player::update(float dt)
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
                 gameScene->removeObjectAt(tile_x, tile_y);
+                gameScene->setWallsDestroyed(true);
             }
 
             set_radius_timer(5.0f);
@@ -222,6 +223,7 @@ void Player::update(float dt)
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
                 gameScene->removeObjectAt(tile_x, tile_y);
+                gameScene->setWallsDestroyed(true);
             }
 
             AudioManager::playSound("gainPickup");
