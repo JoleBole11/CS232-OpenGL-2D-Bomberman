@@ -35,46 +35,113 @@ void GameScene::initialize() {
         glm::vec2(52, 920),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         20, 32
-	);
-	player1_text->setText("P1");
-	ui_texts.push_back(player1_text);
+    );
+    player1_text->setText("P1");
+    ui_texts.push_back(player1_text);
 
     player2_text = new TextRenderer(
-        glm::vec2(812, 920),
+        glm::vec2(820, 920),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         20, 32
     );
-	player2_text->setText("P2");
-	ui_texts.push_back(player2_text);
+    player2_text->setText("P2");
+    ui_texts.push_back(player2_text);
 
     p1_bombs_text = new TextRenderer(
-        glm::vec2(8, 840),
+        glm::vec2(0, 830),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         20, 32
-	);
+    );
     p1_bombs_text->setText("");
-	ui_texts.push_back(p1_bombs_text);
+    ui_texts.push_back(p1_bombs_text);
 
     p2_bombs_text = new TextRenderer(
-        glm::vec2(810, 840),
+        glm::vec2(765, 830),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+    );
+    p2_bombs_text->setText("");
+    ui_texts.push_back(p2_bombs_text);
+
+    p1_bomb_timer_text = new TextRenderer(
+        glm::vec2(0, 872),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+    );
+    p1_bomb_timer_text->setText("");
+    ui_texts.push_back(p1_bomb_timer_text);
+
+    p2_bomb_timer_text = new TextRenderer(
+        glm::vec2(765, 872),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+    );
+    p2_bomb_timer_text->setText("");
+    ui_texts.push_back(p2_bomb_timer_text);
+
+    p1_walls_text = new TextRenderer(
+        glm::vec2(60, 830),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+    );
+	p1_walls_text->setText("");
+	ui_texts.push_back(p1_walls_text);
+
+    p2_walls_text = new TextRenderer(
+        glm::vec2(830, 830),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         20, 32
 	);
-	p2_bombs_text->setText("");
-	ui_texts.push_back(p2_bombs_text);
+	p2_walls_text->setText("");
+	ui_texts.push_back(p2_walls_text);
 
-    GameObject* bomb_sprite = new GameObject(
-        glm::vec2(8, 840),
-        glm::vec2(0),
-        new Sprite(
-            "resources/bombBlack.png",
-            glm::vec2(64, 64),
-            1,
-            glm::vec2(1, 3)
-        )
-    );
-	bomb_sprite->get_sprite()->set_current_frame(1);
-    objects.push_back(bomb_sprite);
+    p1_wall_timer_text = new TextRenderer(
+        glm::vec2(60, 872),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+	);
+	p1_wall_timer_text->setText("");
+	ui_texts.push_back(p1_wall_timer_text);
+
+    p2_wall_timer_text = new TextRenderer(
+        glm::vec2(825, 872),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+		20, 32
+	);
+    p2_wall_timer_text->setText("");
+	ui_texts.push_back(p2_wall_timer_text);
+
+    p1_bomb_control_text = new TextRenderer(
+        glm::vec2(-15, 855),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+	);
+	p1_bomb_control_text->setText("V");
+	ui_texts.push_back(p1_bomb_control_text);
+
+    p2_bomb_control_text = new TextRenderer(
+        glm::vec2(740, 855),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+		20, 32
+	);
+	p2_bomb_control_text->setText(".");
+	ui_texts.push_back(p2_bomb_control_text);
+
+    p1_wall_control_text = new TextRenderer(
+        glm::vec2(40, 855),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+		20, 32
+	);
+	p1_wall_control_text->setText("C");
+	ui_texts.push_back(p1_wall_control_text);
+
+    p2_wall_control_text = new TextRenderer(
+        glm::vec2(800, 855),
+		new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+		20, 32
+	);
+	p2_wall_control_text->setText(",");
+	ui_texts.push_back(p2_wall_control_text);
 
     initialized = true;
 }
@@ -83,32 +150,32 @@ void GameScene::initializeMaps() {
     tile_map = {
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, Wall::RADIUS, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::BREAKABLE, 0, Wall::BREAKABLE, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::SPEED, 0},
+       {0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::BOMB_WALL, 0, Wall::UNBREAKABLE, 0, Wall::SPEED, 0},
        {0, Wall::SPEED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0},
+       {0, 0, 0, Wall::UNBREAKABLE, 0, Wall::SPEED, 0, 0, 0, Wall::UNBREAKABLE, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
        {0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-       {0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, Wall::BREAKABLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+       {0, 0, 0, 0, 0, Wall::BREAKABLE, 0, 0, Wall::BOMB_WALL, 0, 0, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
     height_map = new int[195] {
         2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-        2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-        2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2,
-        2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
         2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-        2, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
         2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2,
-        2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
         2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
         };
 
@@ -276,8 +343,126 @@ bool GameScene::loadTextures() {
                 tile->get_sprite()->set_current_frame(0);
                 tiles.push_back(tile);
             }
+            else if (wall_type == Wall::BOMB_WALL) {
+                GameObject* tile = new GameObject(
+                    pos,
+                    glm::vec2(0),
+                    new Sprite(
+                        "resources/pickupBombWall.png",
+                        glm::vec2(tile_size),
+                        1,
+                        glm::vec2(1)
+                    )
+                );
+                tile->get_sprite()->set_current_frame(0);
+                tiles.push_back(tile);
+            }
         }
     }
+
+    bomb_sprite = new GameObject(
+        glm::vec2(10, 870),
+        glm::vec2(0),
+        new Sprite(
+            getBombSpritePath(getPlayerCharacterById(1)),
+            glm::vec2(48),
+            1,
+            glm::vec2(3, 1)
+        )
+    );
+    bomb_sprite->get_sprite()->set_current_frame(0);
+    ui_objects.push_back(bomb_sprite);
+
+    bomb_sprite = new GameObject(
+        glm::vec2(770, 870),
+        glm::vec2(0),
+        new Sprite(
+            getBombSpritePath(getPlayerCharacterById(2)),
+            glm::vec2(48),
+            1,
+            glm::vec2(3, 1)
+        )
+    );
+    bomb_sprite->get_sprite()->set_current_frame(0);
+    ui_objects.push_back(bomb_sprite);
+
+    wall_sprite = new GameObject(
+        glm::vec2(72, 870),
+        glm::vec2(0),
+        new Sprite(
+            "resources/walls.png",
+            glm::vec2(48),
+            1,
+            glm::vec2(2, 1)
+        )
+    );
+    wall_sprite->get_sprite()->set_current_frame(1);
+    ui_objects.push_back(wall_sprite);
+
+    wall_sprite = new GameObject(
+        glm::vec2(842, 870),
+        glm::vec2(0),
+        new Sprite(
+            "resources/walls.png",
+            glm::vec2(48),
+            1,
+            glm::vec2(2, 1)
+        )
+    );
+    wall_sprite->get_sprite()->set_current_frame(1);
+    ui_objects.push_back(wall_sprite);
+
+    p1_speed_sprite = new GameObject(
+        glm::vec2(140, 880),
+        glm::vec2(0),
+        new Sprite(
+            "resources/speed.png",
+            glm::vec2(40),
+            1,
+            glm::vec2(1)
+        )
+	);  
+    p1_speed_sprite->get_sprite()->set_current_frame(0);
+	ui_objects.push_back(p1_speed_sprite);
+
+    p2_speed_sprite = new GameObject(
+        glm::vec2(905, 880),
+        glm::vec2(0),
+        new Sprite(
+            "resources/speed.png",
+            glm::vec2(40),
+            1,
+            glm::vec2(1)
+        )
+    );
+    p2_speed_sprite->get_sprite()->set_current_frame(0);
+    ui_objects.push_back(p2_speed_sprite);
+
+    p1_radius_sprite = new GameObject(
+        glm::vec2(140, 840),
+        glm::vec2(0),
+        new Sprite(
+            "resources/radius.png",
+            glm::vec2(40),
+            1,
+            glm::vec2(1)
+        )
+    );
+    p1_radius_sprite->get_sprite()->set_current_frame(0);
+    ui_objects.push_back(p1_radius_sprite);
+
+    p2_radius_sprite = new GameObject(
+        glm::vec2(905, 840),
+        glm::vec2(0),
+        new Sprite(
+            "resources/radius.png",
+            glm::vec2(40),
+            1,
+            glm::vec2(1)
+        )
+    );
+    p2_radius_sprite->get_sprite()->set_current_frame(0);
+    ui_objects.push_back(p2_radius_sprite);
 
     return true;
 }
@@ -304,9 +489,36 @@ void GameScene::update(float deltaTime) {
         random_bomb_timer = 0.0f;
     }
 
-    p1_bombs_text->setText(std::to_string(players[0]->get_availabe_bombs()));
-    p2_bombs_text->setText(std::to_string(players[1]->get_availabe_bombs()));
-	
+    if (players[0]->get_is_active() && players[1]->get_is_active()) {
+        p1_bombs_text->setText(std::to_string(players[0]->get_availabe_bombs()));
+        p2_bombs_text->setText(std::to_string(players[1]->get_availabe_bombs()));
+        p1_bomb_timer_text->setText(players[0]->get_bomb_cooldown() > 0.0f ? std::to_string(static_cast<int>(players[0]->get_bomb_cooldown()) + 1) : "");
+        p2_bomb_timer_text->setText(players[1]->get_bomb_cooldown() > 0.0f ? std::to_string(static_cast<int>(players[1]->get_bomb_cooldown()) + 1) : "");
+        p1_walls_text->setText(players[0]->get_number_of_walls() > 0 ? std::to_string(players[0]->get_number_of_walls()) : "");
+        p2_walls_text->setText(players[1]->get_number_of_walls() > 0 ? std::to_string(players[1]->get_number_of_walls()) : "");
+        p1_wall_timer_text->setText(players[0]->get_wall_timer() > 0.0f ? std::to_string(static_cast<int>(players[0]->get_wall_timer()) + 1) : "");
+        p2_wall_timer_text->setText(players[1]->get_wall_timer() > 0.0f ? std::to_string(static_cast<int>(players[1]->get_wall_timer()) + 1) : "");
+
+        if (players[0]->get_radius_powered())
+            p1_radius_sprite->set_is_visible(true);
+        else
+            p1_radius_sprite->set_is_visible(false);
+
+        if (players[1]->get_radius_powered())
+            p2_radius_sprite->set_is_visible(true);
+        else
+            p2_radius_sprite->set_is_visible(false);
+
+        if (players[0]->get_speed_powered())
+            p1_speed_sprite->set_is_visible(true);
+        else
+            p1_speed_sprite->set_is_visible(false);
+
+        if (players[1]->get_speed_powered())
+            p2_speed_sprite->set_is_visible(true);
+        else
+            p2_speed_sprite->set_is_visible(false);
+	}
 
     checkForWinner();
 }
@@ -379,6 +591,12 @@ void GameScene::render() {
         }
     }
 
+    for (auto& ui : ui_objects) {
+        if (ui->get_is_active() && ui->get_is_visible()) {
+            ui->render();
+        }
+    }
+
     for (auto& text : ui_texts) {
         if (text) {
             text->render();
@@ -411,6 +629,11 @@ void GameScene::cleanup() {
         delete[] height_map;
         height_map = nullptr;
     }
+
+    for (auto& ui : ui_objects) {
+        delete ui;
+	}
+	ui_objects.clear();
 }
 
 

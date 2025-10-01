@@ -62,6 +62,9 @@ public:
 
 	int get_availabe_bombs() const { return availabe_bombs; };
 	void set_availabe_bombs(int b) { availabe_bombs = b; };
+    
+	bool get_radius_powered() const { return radius_powered; };
+	bool get_speed_powered() const { return speed_powered; };
 
     int get_player_id() const { return player_id; };
 

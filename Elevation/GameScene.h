@@ -22,6 +22,7 @@ private:
     std::vector<GameObject*> tiles;
     std::vector<GameObject*> objects;
 	std::vector<TextRenderer*> ui_texts;
+    std::vector<GameObject*> ui_objects;
 
 	TextRenderer* player1_text;
 	TextRenderer* player2_text;
@@ -33,10 +34,16 @@ private:
 	TextRenderer* p2_walls_text;
 	TextRenderer* p1_wall_timer_text;
 	TextRenderer* p2_wall_timer_text;
-    Sprite* bomb_sprite;
-	Sprite* wall_sprite;
-    Sprite* speed_sprite;
-	Sprite* radius_sprite;
+    TextRenderer* p1_bomb_control_text;
+	TextRenderer* p2_bomb_control_text;
+	TextRenderer* p1_wall_control_text;
+	TextRenderer* p2_wall_control_text;
+    GameObject* bomb_sprite;
+	GameObject* wall_sprite;
+    GameObject* p1_speed_sprite;
+	GameObject* p2_speed_sprite;
+	GameObject* p1_radius_sprite;
+	GameObject* p2_radius_sprite;
 
     std::vector<std::vector<int>> tile_map;
     int* height_map;

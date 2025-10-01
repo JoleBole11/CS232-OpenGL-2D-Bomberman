@@ -24,6 +24,7 @@ void Player::Place_wall(int tile_x, int tile_y)
         gameScene->addWall(tile_x, tile_y);
     }
     wall_timer = 10.0f;
+	number_of_walls--;
     AudioManager::playSound("placeBomb");
 }
 

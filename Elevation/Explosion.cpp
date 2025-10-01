@@ -56,6 +56,13 @@ bool Explosion::wall_type_check(int height_map_index, int y, int x, int i, int f
                 (*object_map)[y][x] = Object::PICKUP_SPEED;
             }
         }
+        else if ((*tile_map)[tile_map_row][x] == Wall::BOMB_WALL) {
+            if ((*tile_map)[tile_map_row][x] == Wall::BOMB_WALL) {
+                (*tile_map)[tile_map_row][x] = 0;
+                height_map[height_map_index] = 1;
+                (*object_map)[y][x] = Object::PICKUP_BOMB;
+            }
+        }
 
         GameScene* gameScene = GameInstance::getCurrentGameScene();
         if (gameScene) {
