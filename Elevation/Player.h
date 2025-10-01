@@ -13,6 +13,8 @@ class Player :
 {
 private:
     int bomb_radius = 2;
+	int availabe_bombs = 1;
+	int number_of_walls = 3;
     int* height_map;
     int player_id;
 
@@ -43,13 +45,27 @@ public:
     int get_bomb_radius() const { return bomb_radius; };
     void set_bomb_radius(int r) { bomb_radius = r; };
 
+	float get_bomb_cooldown() const { return bomb_cooldown; };
+	void set_bomb_cooldown(float c) { bomb_cooldown = c; };
+
+	int get_number_of_walls() const { return number_of_walls; };
+	void set_number_of_walls(int n) { number_of_walls = n; };
+
+	float get_wall_timer() const { return wall_timer; };
+	void set_wall_timer(float t) { wall_timer = t; };
+
     float get_radius_timer() const { return radius_timer; };
     void set_radius_timer(float t) { radius_timer = t; };
 
     float get_speed_timer() const { return speed_timer; };
     void set_speed_timer(float t) { speed_timer = t; };
 
+	int get_availabe_bombs() const { return availabe_bombs; };
+	void set_availabe_bombs(int b) { availabe_bombs = b; };
+
     int get_player_id() const { return player_id; };
+
+    void Place_wall(int tile_x, int tile_y);
 
     void update(float dt);
 };

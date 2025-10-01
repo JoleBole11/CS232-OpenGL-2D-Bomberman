@@ -20,6 +20,18 @@ private:
     std::vector<GameObject*> mapV;
     std::vector<GameObject*> tiles;
     std::vector<GameObject*> objects;
+	std::vector<TextRenderer*> ui_texts;
+
+	TextRenderer* player1_text;
+	TextRenderer* player2_text;
+	TextRenderer* p1_bombs_text;
+	TextRenderer* p2_bombs_text;
+	TextRenderer* p1_bomb_timer_text;
+	TextRenderer* p2_bomb_timer_text;
+	TextRenderer* p1_walls_text;
+	TextRenderer* p2_walls_text;
+	TextRenderer* p1_wall_timer_text;
+	TextRenderer* p2_wall_timer_text;
 
     std::vector<std::vector<int>> tile_map;
     int* height_map;

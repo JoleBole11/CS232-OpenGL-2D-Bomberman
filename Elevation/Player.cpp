@@ -17,6 +17,16 @@ Player::~Player()
 {
 }
 
+void Player::Place_wall(int tile_x, int tile_y)
+{
+    GameScene* gameScene = GameInstance::getCurrentGameScene();
+    if (gameScene) {
+        gameScene->addWall(tile_x, tile_y);
+    }
+    wall_timer = 10.0f;
+    AudioManager::playSound("placeBomb");
+}
+
 void Player::update(float dt)
 {
     if (dead) {
@@ -29,9 +39,16 @@ void Player::update(float dt)
     int tile_x = static_cast<int>(center.x / 64.0f);
     int tile_y = static_cast<int>(center.y / 64.0f);
 
-    if (bomb_cooldown >= 0.0f) {
+    if (bomb_cooldown >= 0.0f)
         bomb_cooldown -= dt;
-    }
+
+    if (availabe_bombs < 1 && bomb_cooldown <= 0.0f) {
+        availabe_bombs = 1;
+	}
+
+    if (wall_timer >= 0.0f)
+        wall_timer -= dt;
+
     if (radius_timer >= 0.0f) {
         radius_timer -= dt;
         if (radius_timer <= 0.0f && radius_powered) {
@@ -64,13 +81,8 @@ void Player::update(float dt)
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 4;
-            if (Input::getKeyDown('C') && wall_timer <= 0.0f) {
-                GameScene* gameScene = GameInstance::getCurrentGameScene();
-                if (gameScene) {
-                    gameScene->addWall(tile_x, tile_y + 1);
-                }
-                wall_timer = 30.0f;
-                AudioManager::playSound("placeBomb");
+            if (Input::getKeyDown('C') && wall_timer <= 0.0f && number_of_walls >= 1) {
+				Place_wall(tile_x, tile_y + 1);
             }
         }
         else if (Input::getKey('S')) {
@@ -79,13 +91,8 @@ void Player::update(float dt)
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 0;
-            if (Input::getKeyDown('C') && wall_timer <= 0.0f) {
-                GameScene* gameScene = GameInstance::getCurrentGameScene();
-                if (gameScene) {
-                    gameScene->addWall(tile_x, tile_y - 1);
-                }
-                wall_timer = 30.0f;
-                AudioManager::playSound("placeBomb");
+            if (Input::getKeyDown('C') && wall_timer <= 0.0f && number_of_walls >= 1) {
+				Place_wall(tile_x, tile_y - 1);
             }
         }
         else if (Input::getKey('A')) {
@@ -94,13 +101,8 @@ void Player::update(float dt)
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 8;
-            if (Input::getKeyDown('C') && wall_timer <= 0.0f) {
-                GameScene* gameScene = GameInstance::getCurrentGameScene();
-                if (gameScene) {
-                    gameScene->addWall(tile_x - 1, tile_y);
-                }
-                wall_timer = 30.0f;
-                AudioManager::playSound("placeBomb");
+            if (Input::getKeyDown('C') && wall_timer <= 0.0f && number_of_walls >= 1) {
+				Place_wall(tile_x - 1, tile_y);
             }
         }
         else if (Input::getKey('D')) {
@@ -109,22 +111,18 @@ void Player::update(float dt)
             flip.x = true;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 8;
-            if (Input::getKeyDown('C') && wall_timer <= 0.0f) {
-                GameScene* gameScene = GameInstance::getCurrentGameScene();
-                if (gameScene) {
-                    gameScene->addWall(tile_x + 1, tile_y);
-                }
-                wall_timer = 30.0f;
-                AudioManager::playSound("placeBomb");
+            if (Input::getKeyDown('C') && wall_timer <= 0.0f && number_of_walls >= 1) {
+				Place_wall(tile_x + 1, tile_y);
             }
         }
 
-        if (Input::getKeyDown('V') && bomb_cooldown <= 0.0f) {
+        if (Input::getKeyDown('V') && availabe_bombs >= 1) {
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
                 gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
             }
-            bomb_cooldown = 3.0f;
+			availabe_bombs--;
+			bomb_cooldown = 3.0f;
             AudioManager::playSound("placeBomb");
         }
 
@@ -137,6 +135,9 @@ void Player::update(float dt)
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 4;
+            if (Input::getKeyDown(',') && wall_timer <= 0.0f && number_of_walls >= 1) {
+				Place_wall(tile_x, tile_y + 1);
+            }
         }
         else if (Input::getKey('K')) {
             set_velocity(glm::vec2(0, -speed));
@@ -144,6 +145,9 @@ void Player::update(float dt)
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 0;
+            if (Input::getKeyDown(',') && wall_timer <= 0.0f && number_of_walls >= 1) {
+				Place_wall(tile_x, tile_y - 1);
+            }
         }
         else if (Input::getKey('J')) {
             set_velocity(glm::vec2(-speed, 0));
@@ -151,6 +155,9 @@ void Player::update(float dt)
             flip.x = false;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 8;
+            if (Input::getKeyDown(',') && wall_timer <= 0.0f && number_of_walls >= 1) {
+				Place_wall(tile_x - 1, tile_y);
+            }
         }
         else if (Input::getKey('L')) {
             set_velocity(glm::vec2(speed, 0));
@@ -158,9 +165,12 @@ void Player::update(float dt)
             flip.x = true;
             sprite->set_sprite_flip(flip);
             current_direction_frame = 8;
+            if (Input::getKeyDown(',') && wall_timer <= 0.0f && number_of_walls >= 1) {
+                Place_wall(tile_x + 1, tile_y);
+            }
         }
 
-        if (Input::getKeyDown('N') && bomb_cooldown <= 0.0f) {
+        if (Input::getKeyDown('.') && bomb_cooldown <= 0.0f) {
             GameScene* gameScene = GameInstance::getCurrentGameScene();
             if (gameScene) {
                 gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
@@ -203,6 +213,17 @@ void Player::update(float dt)
             radius_powered = true;
             AudioManager::playSound("gainPickup");
         }
+        if ((*object_map)[tile_y][tile_x] == Object::PICKUP_BOMB) {
+			set_availabe_bombs(availabe_bombs + 1);
+            (*object_map)[tile_y][tile_x] = 0;
+
+            GameScene* gameScene = GameInstance::getCurrentGameScene();
+            if (gameScene) {
+                gameScene->removeObjectAt(tile_x, tile_y);
+            }
+
+            AudioManager::playSound("gainPickup");
+        }
     }
 
     const float ANIMATION_SPEED = 0.15f;
@@ -242,7 +263,7 @@ void Player::update(float dt)
 
 bool Player::can_move_to_position(const glm::vec2& position)
 {
-    const float margin = 10.0f;
+    const float margin = 32.0f;
 
     glm::vec2 corners[4] = {
         position + glm::vec2(margin, margin),                          // Top left

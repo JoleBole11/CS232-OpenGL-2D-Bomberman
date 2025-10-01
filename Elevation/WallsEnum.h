@@ -5,5 +5,6 @@ enum Wall
 	UNBREAKABLE = 1,
 	BREAKABLE = 2,
 	SPEED = 3,
-	RADIUS = 4
+	RADIUS = 4,
+	BOMB_WALL = 5
 };

@@ -13,6 +13,10 @@ GameScene::GameScene() : Scene("Game"),
 height_map(nullptr),
 walls_destroyed(false),
 random_bomb_timer(0.0f),
+p1_bombs_text(nullptr),
+p2_bombs_text(nullptr),
+player1_text(nullptr),
+player2_text(nullptr),
 gameEnded(false) {
     player1Character = CharacterType::WHITE;
     player2Character = CharacterType::BLACK;
@@ -30,6 +34,38 @@ void GameScene::initialize() {
     initializeMaps();
 
     GameInstance::getInstance()->setCurrentGameScene(this);
+
+    player1_text = new TextRenderer(
+        glm::vec2(52, 920),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+	);
+	player1_text->setText("P1");
+	ui_texts.push_back(player1_text);
+
+    player2_text = new TextRenderer(
+        glm::vec2(812, 920),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+    );
+	player2_text->setText("P2");
+	ui_texts.push_back(player2_text);
+
+    p1_bombs_text = new TextRenderer(
+        glm::vec2(10, 910),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+	);
+    p1_bombs_text->setText("");
+	ui_texts.push_back(p1_bombs_text);
+
+    p2_bombs_text = new TextRenderer(
+        glm::vec2(940, 920),
+        new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
+        20, 32
+	);
+	p2_bombs_text->setText("");
+	ui_texts.push_back(p2_bombs_text);
 
     initialized = true;
 }
@@ -259,6 +295,14 @@ void GameScene::update(float deltaTime) {
         random_bomb_timer = 0.0f;
     }
 
+    if (players[0]->get_is_active())
+    {
+        p1_bombs_text->setText(std::to_string(players[0]->get_availabe_bombs()));
+    }
+	if (players[1]->get_is_active())
+        p2_bombs_text->setText(std::to_string(players[1]->get_availabe_bombs()));
+	
+
     checkForWinner();
 }
 
@@ -329,6 +373,12 @@ void GameScene::render() {
             p->render();
         }
     }
+
+    for (auto& text : ui_texts) {
+        if (text) {
+            text->render();
+        }
+	}
 }
 
 void GameScene::cleanup() {
@@ -356,6 +406,11 @@ void GameScene::cleanup() {
         delete[] height_map;
         height_map = nullptr;
     }
+
+    for (auto& text : ui_texts) {
+        delete text;
+	}
+	ui_texts.clear();
 }
 
 
@@ -792,6 +847,20 @@ void GameScene::rebuildTiles() {
                 tile->get_sprite()->set_current_frame(0);
                 tiles.push_back(tile);
             }
+            else if (wall_type == Wall::BOMB_WALL) {
+                GameObject* tile = new GameObject(
+                    pos,
+                    glm::vec2(0),
+                    new Sprite(
+                        "resources/pickupBombWall.png",
+                        glm::vec2(tile_size),
+                        1,
+                        glm::vec2(1)
+                    )
+                );
+                tile->get_sprite()->set_current_frame(0);
+                tiles.push_back(tile);
+            }
         }
     }
 
@@ -827,6 +896,20 @@ void GameScene::rebuildTiles() {
                     glm::vec2(0),
                     new Sprite(
                         "resources/powerUpUD.png",
+                        glm::vec2(tile_size),
+                        1,
+                        glm::vec2(1)
+                    )
+                );
+                object->get_sprite()->set_current_frame(0);
+                objects.push_back(object);
+            }
+            else if (object_type == Object::PICKUP_BOMB) {
+                GameObject* object = new GameObject(
+                    pos,
+                    glm::vec2(0),
+                    new Sprite(
+                        "resources/bombPickup.png",
                         glm::vec2(tile_size),
                         1,
                         glm::vec2(1)
