@@ -9,6 +9,7 @@
 #include "MainMenuScene.h"
 #include "GameInstance.h"
 #include "WinScene.h"
+#include "TextRenderer.h"
 
 class GameInstance;
 class MainMenuScene;
@@ -32,6 +33,10 @@ private:
 	TextRenderer* p2_walls_text;
 	TextRenderer* p1_wall_timer_text;
 	TextRenderer* p2_wall_timer_text;
+    Sprite* bomb_sprite;
+	Sprite* wall_sprite;
+    Sprite* speed_sprite;
+	Sprite* radius_sprite;
 
     std::vector<std::vector<int>> tile_map;
     int* height_map;

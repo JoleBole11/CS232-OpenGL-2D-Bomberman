@@ -175,6 +175,7 @@ void Player::update(float dt)
             if (gameScene) {
                 gameScene->addBomb(tile_x, tile_y, bomb_radius, player_id);
             }
+            availabe_bombs--;
             bomb_cooldown = 3.0f;
             AudioManager::playSound("placeBomb");
         }

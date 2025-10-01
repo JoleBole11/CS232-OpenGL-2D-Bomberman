@@ -13,10 +13,6 @@ GameScene::GameScene() : Scene("Game"),
 height_map(nullptr),
 walls_destroyed(false),
 random_bomb_timer(0.0f),
-p1_bombs_text(nullptr),
-p2_bombs_text(nullptr),
-player1_text(nullptr),
-player2_text(nullptr),
 gameEnded(false) {
     player1Character = CharacterType::WHITE;
     player2Character = CharacterType::BLACK;
@@ -52,7 +48,7 @@ void GameScene::initialize() {
 	ui_texts.push_back(player2_text);
 
     p1_bombs_text = new TextRenderer(
-        glm::vec2(10, 910),
+        glm::vec2(8, 840),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         20, 32
 	);
@@ -60,12 +56,25 @@ void GameScene::initialize() {
 	ui_texts.push_back(p1_bombs_text);
 
     p2_bombs_text = new TextRenderer(
-        glm::vec2(940, 920),
+        glm::vec2(810, 840),
         new Sprite("Resources/font.png", glm::vec2(32), 1, glm::vec2(15, 8), true),
         20, 32
 	);
 	p2_bombs_text->setText("");
 	ui_texts.push_back(p2_bombs_text);
+
+    GameObject* bomb_sprite = new GameObject(
+        glm::vec2(8, 840),
+        glm::vec2(0),
+        new Sprite(
+            "resources/bombBlack.png",
+            glm::vec2(64, 64),
+            1,
+            glm::vec2(1, 3)
+        )
+    );
+	bomb_sprite->get_sprite()->set_current_frame(1);
+    objects.push_back(bomb_sprite);
 
     initialized = true;
 }
@@ -295,12 +304,8 @@ void GameScene::update(float deltaTime) {
         random_bomb_timer = 0.0f;
     }
 
-    if (players[0]->get_is_active())
-    {
-        p1_bombs_text->setText(std::to_string(players[0]->get_availabe_bombs()));
-    }
-	if (players[1]->get_is_active())
-        p2_bombs_text->setText(std::to_string(players[1]->get_availabe_bombs()));
+    p1_bombs_text->setText(std::to_string(players[0]->get_availabe_bombs()));
+    p2_bombs_text->setText(std::to_string(players[1]->get_availabe_bombs()));
 	
 
     checkForWinner();
@@ -406,11 +411,6 @@ void GameScene::cleanup() {
         delete[] height_map;
         height_map = nullptr;
     }
-
-    for (auto& text : ui_texts) {
-        delete text;
-	}
-	ui_texts.clear();
 }
 
 
