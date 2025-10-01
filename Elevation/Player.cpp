@@ -44,7 +44,7 @@ void Player::update(float dt)
         bomb_cooldown -= dt;
 
     if (availabe_bombs < 1 && bomb_cooldown <= 0.0f) {
-        availabe_bombs = 1;
+        availabe_bombs++;
 	}
 
     if (wall_timer >= 0.0f)
