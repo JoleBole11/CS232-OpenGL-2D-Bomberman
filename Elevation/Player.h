@@ -19,6 +19,7 @@ private:
     std::vector<std::vector<int>>* object_map;
 
     float bomb_cooldown = 0.0f;
+	float wall_timer = 0.0f;
     float speed = 100;
     float radius_timer = 0;
     float speed_timer = 0;

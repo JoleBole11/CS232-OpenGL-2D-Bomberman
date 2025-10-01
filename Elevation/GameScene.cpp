@@ -584,6 +584,46 @@ void GameScene::addBomb(int tile_x, int tile_y, int radius, int playerId) {
         << static_cast<int>(character) << std::endl;
 }
 
+void GameScene::addWall(int tile_x, int tile_y)
+{
+    if (tile_x < 0 || tile_x >= 15 || tile_y < 0 || tile_y >= 13) {
+        return;
+    }
+
+    int tile_y_reversed = 12 - tile_y;
+
+    if (tile_map[tile_y_reversed][tile_x] != 0) {
+        return;
+    }
+
+    tile_map[tile_y_reversed][tile_x] = Wall::BREAKABLE;
+	height_map[tile_y * 15 + tile_x] = 2;
+
+    float origin_x = (width - 15 * tile_size) / 2.0f;
+    float origin_y = (height - 13 * tile_size) / 2.0f;
+
+    glm::vec2 wall_pos(
+        tile_x * tile_size + origin_x,
+        tile_y * tile_size + origin_y
+    );
+
+    GameObject* tile = new GameObject(
+        wall_pos,
+        glm::vec2(0),
+        new Sprite(
+            "resources/walls.png",
+            glm::vec2(tile_size),
+            1,
+            glm::vec2(2, 1)
+        )
+    );
+    tile->get_sprite()->set_current_frame(1);
+    tiles.push_back(tile);
+
+    std::cout << "Wall created at world tile (" << tile_x << ", " << tile_y
+		<< ") array pos (" << tile_x << ", " << tile_y_reversed << ")" << std::endl;
+}
+
 void GameScene::spawnRandomBomb() {
     std::vector<std::pair<int, int>> availableTiles = getAvailableTiles();
 

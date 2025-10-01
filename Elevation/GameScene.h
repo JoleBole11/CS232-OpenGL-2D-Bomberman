@@ -64,6 +64,7 @@ public:
     void onExit() override;
 
     void addBomb(int tile_x, int tile_y, int radius, int playerId);
+    void addWall(int tile_x, int tile_y);
     void addExplosion(int tile_x, int tile_y, int radius, CharacterType character);
     void removeObjectAt(int tile_x, int tile_y);
     void setWallsDestroyed(bool destroyed) { walls_destroyed = destroyed; }
